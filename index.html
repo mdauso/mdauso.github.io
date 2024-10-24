@@ -1,382 +1,277 @@
-<html>
+<!DOCTYPE html>
+
+<html lang="de">
 
 <head>
-<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
-<meta name=Generator content="Microsoft Word 15 (filtered)">
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Serielle Daten Visualisierung</title>
+
+<script src="https:// cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:DengXian;
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-@font-face
-	{font-family:"\@DengXian";
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin-top:0cm;
-	margin-right:0cm;
-	margin-bottom:8.0pt;
-	margin-left:0cm;
-	line-height:107%;
-	font-size:11.0pt;
-	font-family:"Calibri",sans-serif;}
-a:link, span.MsoHyperlink
-	{color:#0563C1;
-	text-decoration:underline;}
-p.MsoPlainText, li.MsoPlainText, div.MsoPlainText
-	{mso-style-link:"Nur Text Zchn";
-	margin:0cm;
-	font-size:11.0pt;
-	font-family:"Arial",sans-serif;}
-span.NurTextZchn
-	{mso-style-name:"Nur Text Zchn";
-	mso-style-link:"Nur Text";
-	font-family:"Arial",sans-serif;}
-.MsoChpDefault
-	{font-family:"Calibri",sans-serif;}
-.MsoPapDefault
-	{margin-bottom:8.0pt;
-	line-height:107%;}
-@page WordSection1
-	{size:595.3pt 841.9pt;
-	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
-div.WordSection1
-	{page:WordSection1;}
--->
+
+body {
+
+font-family: Arial, sans-serif;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: center;
+
+justify-content: center;
+
+height: 100vh;
+
+margin: 0;
+
+background-color: #f0f0f0;
+
+}
+
+ 
+
+h1 {
+
+color: #333;
+
+}
+
+ 
+
+#connectBtn {
+
+padding: 10px 20px;
+
+font-size: 16px;
+
+background-color: #007bff;
+
+color: white;
+
+border: none;
+
+border-radius: 5px;
+
+cursor: pointer;
+
+margin-bottom: 20px;
+
+}
+
+ 
+
+#connectBtn:hover {
+
+background-color: #0056b3;
+
+}
+
+ 
+
+canvas {
+
+background-color: white;
+
+border: 1px solid #ccc;
+
+border-radius: 10px;
+
+}
+
 </style>
 
 </head>
 
-<body lang=DE link="#0563C1" vlink="#954F72" style='word-wrap:break-word'>
+<body>
 
-<div class=WordSection1>
+<h1>Serielle Daten Visualisierung</h1>
 
-<p class=MsoPlainText>&lt;!DOCTYPE html&gt;</p>
+<button id="connectBtn">Verbinden mit Ger t</button>
 
-<p class=MsoPlainText>&lt;html lang=&quot;de&quot;&gt;</p>
+<canvas id="dataChart" width="400" height="200"></canvas>
 
-<p class=MsoPlainText><span lang=EN-US>&lt;head&gt;</span></p>
+ 
 
-<p class=MsoPlainText><span lang=EN-US>    &lt;meta
-charset=&quot;UTF-8&quot;&gt;</span></p>
+<script>
 
-<p class=MsoPlainText><span lang=EN-US>    &lt;meta name=&quot;viewport&quot;
-content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</span></p>
+let device;
 
-<p class=MsoPlainText><span lang=EN-US>    </span>&lt;title&gt;Serielle Daten
-Visualisierung&lt;/title&gt;</p>
+let serviceUuid = 'dein_service_uuid'; // Ersetze mit deiner Service UUID
 
-<p class=MsoPlainText>    &lt;script src=&quot;<a
-href="https://%20cdn.jsdelivr.net/npm/chart.js">https:// cdn.jsdelivr.net/npm/chart.js</a>&quot;&gt;&lt;/script&gt;</p>
+let characteristicUuid = 'dein_characteristic_uuid'; // Ersetze mit deiner Characteristic UUID
 
-<p class=MsoPlainText>    <span lang=EN-US>&lt;style&gt;</span></p>
+let chart;
 
-<p class=MsoPlainText><span lang=EN-US>        body {</span></p>
+ 
 
-<p class=MsoPlainText><span lang=EN-US>            font-family: Arial,
-sans-serif;</span></p>
+document.getElementById('connectBtn').addEventListener('click', async () => {
 
-<p class=MsoPlainText><span lang=EN-US>            display: flex;</span></p>
+try {
 
-<p class=MsoPlainText><span lang=EN-US>            flex-direction: column;</span></p>
+device = await navigator.bluetooth.requestDevice({
 
-<p class=MsoPlainText><span lang=EN-US>            align-items: center;</span></p>
+filters: [{ services: [serviceUuid] }]
 
-<p class=MsoPlainText><span lang=EN-US>            justify-content: center;</span></p>
+});
 
-<p class=MsoPlainText><span lang=EN-US>            height: 100vh;</span></p>
+const server = await device.gatt.connect();
 
-<p class=MsoPlainText><span lang=EN-US>            margin: 0;</span></p>
+const service = await server.getPrimaryService(serviceUuid);
 
-<p class=MsoPlainText><span lang=EN-US>            background-color: #f0f0f0;</span></p>
+const characteristic = await service.getCharacteristic(characteristicUuid);
 
-<p class=MsoPlainText><span lang=EN-US>        }</span></p>
+ 
 
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
+characteristic.startNotifications();
 
-<p class=MsoPlainText><span lang=EN-US>        h1 {</span></p>
+characteristic.addEventListener('characteristicvaluechanged', handleSerialData);
 
-<p class=MsoPlainText><span lang=EN-US>            </span>color: #333;</p>
+} catch (error) {
 
-<p class=MsoPlainText>        }</p>
+console.log('Fehler beim Verbinden mit dem Ger t:', error);
 
-<p class=MsoPlainText>&nbsp;</p>
+}
 
-<p class=MsoPlainText>        <span lang=EN-US>#connectBtn {</span></p>
+});
 
-<p class=MsoPlainText><span lang=EN-US>            padding: 10px 20px;</span></p>
+ 
 
-<p class=MsoPlainText><span lang=EN-US>            font-size: 16px;</span></p>
+function handleSerialData(event) {
 
-<p class=MsoPlainText><span lang=EN-US>            background-color: #007bff;</span></p>
+const value = event.target.value;
 
-<p class=MsoPlainText><span lang=EN-US>            color: white;</span></p>
+let decoder = new TextDecoder('utf-8');
 
-<p class=MsoPlainText><span lang=EN-US>            border: none;</span></p>
+let serialData = decoder.decode(value);
 
-<p class=MsoPlainText><span lang=EN-US>            border-radius: 5px;</span></p>
+let extractedValues = extractValues(serialData);
 
-<p class=MsoPlainText><span lang=EN-US>            cursor: pointer;</span></p>
+updateChart(extractedValues);
 
-<p class=MsoPlainText><span lang=EN-US>            margin-bottom: 20px;</span></p>
+}
 
-<p class=MsoPlainText><span lang=EN-US>        }</span></p>
+ 
 
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
+function extractValues(data) {
 
-<p class=MsoPlainText><span lang=EN-US>        #connectBtn:hover {</span></p>
+// Beispiel: Annahme, dass die seriellen Daten als CSV gesendet werden: "Wert1,Wert2"
 
-<p class=MsoPlainText><span lang=EN-US>            background-color: #0056b3;</span></p>
+let values = data.split(',');
 
-<p class=MsoPlainText><span lang=EN-US>        }</span></p>
+return {
 
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
+value1: parseFloat(values[0]),
 
-<p class=MsoPlainText><span lang=EN-US>        canvas {</span></p>
+value2: parseFloat(values[1])
 
-<p class=MsoPlainText><span lang=EN-US>            background-color: white;</span></p>
+};
 
-<p class=MsoPlainText><span lang=EN-US>            </span>border: 1px solid
-#ccc;</p>
+}
 
-<p class=MsoPlainText>            border-radius: 10px;</p>
+ 
 
-<p class=MsoPlainText>        }</p>
+function updateChart(values) {
 
-<p class=MsoPlainText>    &lt;/style&gt;</p>
+if (!chart) {
 
-<p class=MsoPlainText>&lt;/head&gt;</p>
+initializeChart();
 
-<p class=MsoPlainText>&lt;body&gt;</p>
+}
 
-<p class=MsoPlainText>    &lt;h1&gt;Serielle Daten Visualisierung&lt;/h1&gt;</p>
+ 
 
-<p class=MsoPlainText>    &lt;button id=&quot;connectBtn&quot;&gt;Verbinden mit
-Ger t&lt;/button&gt;</p>
+chart.data.labels.push(new Date().toLocaleTimeString());
 
-<p class=MsoPlainText>    <span lang=EN-US>&lt;canvas id=&quot;dataChart&quot;
-width=&quot;400&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;</span></p>
+chart.data.datasets[0].data.push(values.value1);
 
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
+chart.data.datasets[1].data.push(values.value2);
 
-<p class=MsoPlainText><span lang=EN-US>    &lt;script&gt;</span></p>
+ 
 
-<p class=MsoPlainText><span lang=EN-US>        let device;</span></p>
+chart.update();
 
-<p class=MsoPlainText><span lang=EN-US>        let serviceUuid =
-'dein_service_uuid';  // Ersetze mit deiner Service UUID</span></p>
+}
 
-<p class=MsoPlainText><span lang=EN-US>        let characteristicUuid =
-'dein_characteristic_uuid';  // Ersetze mit deiner Characteristic UUID</span></p>
+ 
 
-<p class=MsoPlainText><span lang=EN-US>        let chart;</span></p>
+function initializeChart() {
 
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
+const ctx = document.getElementById('dataChart').getContext('2d');
 
-<p class=MsoPlainText><span lang=EN-US>        document.getElementById('connectBtn').addEventListener('click',
-async () =&gt; {</span></p>
+chart = new Chart(ctx, {
 
-<p class=MsoPlainText><span lang=EN-US>            try {</span></p>
+type: 'line',
 
-<p class=MsoPlainText><span lang=EN-US>                device = await
-navigator.bluetooth.requestDevice({</span></p>
+data: {
 
-<p class=MsoPlainText><span lang=EN-US>                    filters: [{
-services: [serviceUuid] }]</span></p>
+labels: [],
 
-<p class=MsoPlainText><span lang=EN-US>                });</span></p>
+datasets: [
 
-<p class=MsoPlainText><span lang=EN-US>                const server = await
-device.gatt.connect();</span></p>
+{
 
-<p class=MsoPlainText><span lang=EN-US>                const service = await
-server.getPrimaryService(serviceUuid);</span></p>
+label: 'Wert 1',
 
-<p class=MsoPlainText><span lang=EN-US>                const characteristic =
-await service.getCharacteristic(characteristicUuid);</span></p>
+borderColor: 'rgba(255, 99, 132, 1)',
 
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
+backgroundColor: 'rgba(255, 99, 132, 0.2)',
 
-<p class=MsoPlainText><span lang=EN-US>               
-characteristic.startNotifications();</span></p>
+data: []
 
-<p class=MsoPlainText><span lang=EN-US>               
-characteristic.addEventListener('characteristicvaluechanged',
-handleSerialData);</span></p>
+},
 
-<p class=MsoPlainText><span lang=EN-US>            </span>} catch (error) {</p>
+{
 
-<p class=MsoPlainText>                console.log('Fehler beim Verbinden mit
-dem Ger t:', error);</p>
+label: 'Wert 2',
 
-<p class=MsoPlainText>            <span lang=EN-US>}</span></p>
+borderColor: 'rgba(54, 162, 235, 1)',
 
-<p class=MsoPlainText><span lang=EN-US>        });</span></p>
+backgroundColor: 'rgba(54, 162, 235, 0.2)',
 
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
+data: []
 
-<p class=MsoPlainText><span lang=EN-US>        function handleSerialData(event)
-{</span></p>
+}
 
-<p class=MsoPlainText><span lang=EN-US>            const value =
-event.target.value;</span></p>
+]
 
-<p class=MsoPlainText><span lang=EN-US>            let decoder = new
-TextDecoder('utf-8');</span></p>
+},
 
-<p class=MsoPlainText><span lang=EN-US>            let serialData =
-decoder.decode(value);</span></p>
+options: {
 
-<p class=MsoPlainText><span lang=EN-US>            let extractedValues =
-extractValues(serialData);</span></p>
+responsive: true,
 
-<p class=MsoPlainText><span lang=EN-US>            updateChart(extractedValues);</span></p>
+scales: {
 
-<p class=MsoPlainText><span lang=EN-US>        }</span></p>
+x: {
 
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
+type: 'time',
 
-<p class=MsoPlainText><span lang=EN-US>        function extractValues(data) {</span></p>
+time: {
 
-<p class=MsoPlainText><span lang=EN-US>            // Beispiel: Annahme, dass
-die seriellen Daten als CSV gesendet werden: &quot;Wert1,Wert2&quot;</span></p>
+unit: 'second'
 
-<p class=MsoPlainText><span lang=EN-US>            let values =
-data.split(',');</span></p>
+}
 
-<p class=MsoPlainText><span lang=EN-US>            </span>return {</p>
+}
 
-<p class=MsoPlainText>                value1: parseFloat(values[0]),</p>
+}
 
-<p class=MsoPlainText>                <span lang=EN-US>value2:
-parseFloat(values[1])</span></p>
+}
 
-<p class=MsoPlainText><span lang=EN-US>            };</span></p>
+});
 
-<p class=MsoPlainText><span lang=EN-US>        }</span></p>
+}
 
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>        function updateChart(values) {</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>            if (!chart) {</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                initializeChart();</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>            }</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>            chart.data.labels.push(new
-Date().toLocaleTimeString());</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>           
-chart.data.datasets[0].data.push(values.value1);</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>           
-chart.data.datasets[1].data.push(values.value2);</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>            chart.update();</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>        }</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>&nbsp;</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>        function initializeChart() {</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>            const ctx =
-document.getElementById('dataChart').getContext('2d');</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>            chart = new Chart(ctx, {</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                type: 'line',</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                </span>data: {</p>
-
-<p class=MsoPlainText>                    labels: [],</p>
-
-<p class=MsoPlainText>                    datasets: [</p>
-
-<p class=MsoPlainText>                        {</p>
-
-<p class=MsoPlainText>                            label: 'Wert 1',</p>
-
-<p class=MsoPlainText>                            <span lang=EN-US>borderColor:
-'rgba(255, 99, 132, 1)',</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                           
-backgroundColor: 'rgba(255, 99, 132, 0.2)',</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                            data: []</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                        },</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                        {</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                            label: 'Wert
-2',</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                            borderColor:
-'rgba(54, 162, 235, 1)',</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                           
-backgroundColor: 'rgba(54, 162, 235, 0.2)',</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                            data: []</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                        }</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                    ]</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                },</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                options: {</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                    responsive: true,</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                    scales: {</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                        x: {</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                            type:
-'time',</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                            time: {</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                                unit:
-'second'</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                            }</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                        }</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                    }</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>                }</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>            });</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>        }</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>    &lt;/script&gt;</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>&lt;/body&gt;</span></p>
-
-<p class=MsoPlainText><span lang=EN-US>&lt;/html&gt;</span></p>
-
-<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-
-</div>
+</script>
 
 </body>
 
 </html>
+
+ 
