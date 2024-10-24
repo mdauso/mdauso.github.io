@@ -3,9 +3,11 @@ let serviceUuid = 'dein_service_uuid'; // Ersetze mit deiner Service UUID
 let characteristicUuid = 'dein_characteristic_uuid'; // Ersetze mit deiner Characteristic UUID
 let chart;
 let uuidButton = document.getElementById('uuid');
+let CuuidButton = document.getElementById('Cuuid');
 
 document.getElementById('connectBtn').addEventListener('click', async () => {
 try {
+  characteristicUuid = CuuidButton.value;
   serviceUuid = uuidButton.value;
   device = await navigator.bluetooth.requestDevice({
   filters: [{ services: [serviceUuid] }]
