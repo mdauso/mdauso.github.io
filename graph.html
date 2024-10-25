@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daten Graph</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #chartContainer {
+            width: 80%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Graphische Darstellung</h1>
+    <div id="chartContainer">
+        <canvas id="dataChart"></canvas>
+    </div>
+    <button onclick="window.location.href='index.html'">Zurück zur Hauptseite</button>
+
+    <script>
+        // Daten aus localStorage abrufen
+        let lambdaData = JSON.parse(localStorage.getItem('lambdaData')) || [];
+        let tempData = JSON.parse(localStorage.getItem('tempData')) || [];
+        let labels = Array.from({ length: lambdaData.length }, (_, i) => i + 1); // Erstellen von Zeitlabels
+
+        const ctx = document.getElementById('dataChart').getContext('2d');
+        const dataChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Lambdawert',
+                        data: lambdaData,
+                        borderColor: 'blue',
+                        fill: false
+                    },
+                    {
+                        label: 'Sondentemperatur',
+                        data: tempData,
+                        borderColor: 'red',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Zeit'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Werte'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Automatische Aktualisierung des Graphen mit neuen Daten
+        function updateChart() {
+            lambdaData = JSON.parse(localStorage.getItem('lambdaData')) || [];
+            tempData = JSON.parse(localStorage.getItem('tempData')) || [];
+            dataChart.data.labels = Array.from({ length: lambdaData.length }, (_, i) => i + 1);
+            dataChart.data.datasets[0].data = lambdaData;
+            dataChart.data.datasets[1].data = tempData;
+            dataChart.update();
+        }
+
+        setInterval(updateChart, 1000); // Aktualisiere den Graphen jede Sekunde
+    </script>
+</body>
+</html>
