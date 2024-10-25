@@ -106,8 +106,8 @@
             let data = new Uint8Array(value.buffer);
 
             if (data.length >= 2) {
-                let lambdawert = data[0];
-                let sondentemperatur = data[1];
+                let lambdawert = data[0] / 147;
+                let sondentemperatur = data[1] * 10;
 
                 updateValues(lambdawert, sondentemperatur);
                 
