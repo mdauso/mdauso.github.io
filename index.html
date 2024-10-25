@@ -97,14 +97,14 @@
             let data = new Uint8Array(value.buffer); // Umwandlung des Datenpakets in ein 8-Byte-Array
 
             if (data.length >= 2) {
-                let lambdawert = data[0];  // Erster Byte = Lambdawert
+                let lambdawert = data[0] / 147;  // Erster Byte = Lambdawert
                 let sondentemperatur = data[1];  // Zweiter Byte = Sondentemperatur
 
                 updateValues(lambdawert, sondentemperatur);
             } else {
                 console.log('Ungültiges Datenpaket empfangen.');
             }
-            lambdawert = lambdawert / 147;
+            
         }
 
         function updateValues(lambdaValue, tempValue) {
