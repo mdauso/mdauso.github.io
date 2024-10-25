@@ -1,5 +1,5 @@
         let device;
-        let targetDeviceName = 'HMSoft'; // Ersetze dies mit dem Gerätenamen deines HC-10 oder eines anderen Geräts
+        let targetDeviceName = 'ESP32'; // Ersetze dies mit dem Gerätenamen deines HC-10 oder eines anderen Geräts
         let serialCharacteristic;
 
         document.getElementById('connectBtn').addEventListener('click', async () => {
