@@ -101,7 +101,7 @@
 
             if (data.length >= 2) {
                 let lambdawert = data[0] / 147;  // Erster Byte = Lambdawert
-                let sondentemperatur = data[1];  // Zweiter Byte = Sondentemperatur
+                let sondentemperatur = data[1] * 10;  // Zweiter Byte = Sondentemperatur
 
                 updateValues(lambdawert, sondentemperatur);
             } else {
