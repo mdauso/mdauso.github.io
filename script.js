@@ -47,7 +47,7 @@ function handleSerialData(event) {
 
             if (data.length === 8) {
                 // Lambda-Wert: byte 0 geteilt durch 147
-                let lambdawert = data[0] / 14.7;
+                let lambdawert = data[0];
 
                 // Temperaturwert: byte 1 direkt als °C
                 let sondentemperatur = data[1];
@@ -57,8 +57,9 @@ function handleSerialData(event) {
                 console.log('Ungültiges Datenpaket empfangen:', data);
             }
         }
-
+/*
         function updateValues(lambdaValue, tempValue) {
             document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
             document.getElementById('tempValue').textContent = tempValue.toString();      // Zeige Temperatur
+            */
         }
