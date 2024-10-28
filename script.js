@@ -21,7 +21,7 @@
             }
         });
 
-        function handleSerialData(event) {
+       /* function handleSerialData(event) {
             const value = event.target.value;
             let data = new Uint8Array(value.buffer); // Umwandlung des Datenpakets in ein 8-Byte-Array
 
@@ -39,4 +39,26 @@
         function updateValues(lambdaValue, tempValue) {
             document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2); // Zeige den Lambdawert an
             document.getElementById('tempValue').textContent = tempValue.toFixed(0);     // Zeige die Sondentemperatur an
+        }
+        */
+function handleSerialData(event) {
+            const value = event.target.value;
+            let data = new Uint8Array(value.buffer);
+
+            if (data.length === 8) {
+                // AFR-Wert: byte 0 geteilt durch 10
+                let lambdawert = data[0] / 10.0;
+
+                // Temperaturwert: byte 1 direkt als °C
+                let sondentemperatur = data[1];
+
+                updateValues(lambdawert, sondentemperatur);
+            } else {
+                console.log('Ungültiges Datenpaket empfangen:', data);
+            }
+        }
+
+        function updateValues(lambdaValue, tempValue) {
+            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
+            document.getElementById('tempValue').textContent = tempValue.toString();      // Zeige Temperatur
         }
