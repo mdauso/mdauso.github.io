@@ -46,7 +46,7 @@ function handleSerialData(event) {
             let data = new Uint8Array(value.buffer);
 
             if (data.length === 8) {
-                // AFR-Wert: byte 0 geteilt durch 10
+                // Lambda-Wert: byte 0 geteilt durch 147
                 let lambdawert = data[0] / 14.7;
 
                 // Temperaturwert: byte 1 direkt als °C
