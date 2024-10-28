@@ -47,7 +47,7 @@ function handleSerialData(event) {
 
             if (data.length === 8) {
                 // AFR-Wert: byte 0 geteilt durch 10
-                let lambdawert = data[0] / 10.0;
+                let lambdawert = data[0] / 14.7;
 
                 // Temperaturwert: byte 1 direkt als °C
                 let sondentemperatur = data[1];
