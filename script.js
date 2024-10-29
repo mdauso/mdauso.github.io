@@ -103,14 +103,14 @@ function handleSerialData(event) {
                  sondentemperatur=187; 
                 } 
                     
-                sondentemperatur_out =Temperature_Array[sondentemperatur-113]+740;
+                sondentemperatur_out =Temperature_Array[sondentemperatur-113] + 740;
                 
 
                 updateValues(lambdawert, sondentemperatur_out);
 
 
         function updateValues(lambdaValue, tempValue) {
-        document.getElementById('lambValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
+        document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
         document.getElementById('tempValue').textContent = tempValue.toString();   // Zeige Temperatur
             
         }
