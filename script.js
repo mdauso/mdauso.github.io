@@ -78,9 +78,9 @@ function handleSerialData(event) {
                 console.log('Ungültiges Datenpaket empfangen:', data);
             }
         }
-/*
+
         function updateValues(lambdaValue, tempValue) {
             document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
             document.getElementById('tempValue').textContent = tempValue.toString();      // Zeige Temperatur
-            */
+            
         }
