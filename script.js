@@ -1,22 +1,21 @@
+        <script>
         let device;
-        let targetDeviceName = 'HMSoft'; // Ersetze dies mit dem Gerätenamen deines HC-10 oder eines anderen Geräts
+        let targetDeviceName = 'HMSoft';
         let serialCharacteristic;
-        
 
-// Temperatur-Array zur Umrechnung des Temperaturwerts
+        // Temperatur-Array zur Umrechnung des Temperaturwerts
         const Temperature_Array = [80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61, 60, 59, 58, 56, 55, 54, 52, 51, 50, 49, 48, 46, 45, 44, 43, 42, 41, 40, 39, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 18, 17, 16, 15, 14, 13, 12, 11, 11, 10, 9, 8, 7, 6, 5, 5, 4, 3, 2, 1, 1, 0];
 
         document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
-                // Scanne nach Geräten ohne Service UUID, stattdessen durch Namensfilterung
                 device = await navigator.bluetooth.requestDevice({
                     filters: [{ name: targetDeviceName }],
-                    optionalServices: ['FFE0'] // Optional, falls das Gerät Services bietet, die du ansprechen möchtest
+                    optionalServices: ['FFE0']
                 });
                 
                 const server = await device.gatt.connect();
-                const service = await server.getPrimaryService('FFE0'); // Standardservice für HC-10
-                serialCharacteristic = await service.getCharacteristic('FFE1'); // Standardcharakteristik für serielle Daten
+                const service = await server.getPrimaryService('FFE0');
+                serialCharacteristic = await service.getCharacteristic('FFE1');
                 
                 serialCharacteristic.startNotifications();
                 serialCharacteristic.addEventListener('characteristicvaluechanged', handleSerialData);
@@ -25,32 +24,20 @@
             }
         });
 
-
-
- function handleSerialData(event) {
+        function handleSerialData(event) {
             const value = event.target.value;
             let data = new Uint8Array(value.buffer);
 
             if (data.length === 8) {
-                // Lambda-Wert: byte 0 geteilt durch 147
-                let lambdawert = data[0] / 147.0;
-                    
+                // AFR-Wert: byte 0 geteilt durch 10
+                let lambdawert = data[0] / 10.0;
 
                 // Temperaturwert: byte 1 als Index für das Temperature_Array
                 let tempIndex = data[1];
-                    
-                    if tempIndex > 187
-                    {
-                            let tempIndex = 187;
-                    }
+                let sondentemperatur = (tempIndex >= 0 && tempIndex < Temperature_Array.length) 
+                    ? Temperature_Array[tempIndex] 
+                    : '--'; // Fallback, falls der Index ungültig ist
 
-                     if tempIndex < 113
-                    {
-                            let tempIndex = 113;
-                    }
-                    
-                let sondentemperatur = (tempIndex - 113) + 740;
-                    
                 updateValues(lambdawert, sondentemperatur);
             } else {
                 console.log('Ungültiges Datenpaket empfangen:', data);
@@ -58,9 +45,7 @@
         }
 
         function updateValues(lambdaValue, tempValue) {
-            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2); // Zeige Lambdawert
-            document.getElementById('tempValue').textContent = tempValue.toFixed(0);      // Zeige Temperatur
+            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
+            document.getElementById('tempValue').textContent = tempValue.toString();      // Zeige Temperatur
         }
-
-   
-
+    </script>
