@@ -49,10 +49,12 @@ let Temperature_Array[] ={80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61
         }
         */
 
-/*
+
 function handleSerialData(event) {
+
             const value = event.target.value;
             let data = new Uint8Array(value.buffer);
+        /*
 
 
         
@@ -103,7 +105,8 @@ function handleSerialData(event) {
 
 
         function updateValues(lambdaValue, tempValue) {
-        document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
+        document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2); // Zeige Lambdawert (AFR)
         document.getElementById('tempValue').textContent = tempValue.toString();   // Zeige Temperatur
             
         }
+}
