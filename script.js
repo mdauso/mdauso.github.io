@@ -84,6 +84,31 @@ function handleSerialData(event) {
             }
         }
 
+
+// Lambda-Wert: byte 0 geteilt durch 147
+                // let lambdawert = data[0];
+                lambdawert = 150;
+
+                // Temperaturwert: byte 1 direkt als °C
+                //let sondentemperatur = data[1];
+                sondentemperatur = 115;
+
+                if (sondentemperatur<113) 
+                { 
+                sondentemperatur=113; 
+                } 
+                    
+                if (sondentemperatur>187) 
+                { 
+                 sondentemperatur=187; 
+                } 
+                    
+                sondentemperatur_out =Temperature_Array[sondentemperatur-113]+740;
+                
+
+                updateValues(lambdawert, sondentemperatur_out);
+
+
         function updateValues(lambdaValue, tempValue) {
         document.getElementById('lambValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
         document.getElementById('tempValue').textContent = tempValue.toString();   // Zeige Temperatur
