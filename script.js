@@ -34,10 +34,22 @@
             if (data.length === 8) {
                 // Lambda-Wert: byte 0 geteilt durch 147
                 let lambdawert = data[0] / 147.0;
+                    
 
                 // Temperaturwert: byte 1 als Index für das Temperature_Array
                 let tempIndex = data[1];
-                let sondentemperatur = (tempIndex - 133) + 740;
+                    
+                    if tempIndex > 187
+                    {
+                            let tempIndex = 187;
+                    }
+
+                     if tempIndex < 113
+                    {
+                            let tempIndex = 113;
+                    }
+                    
+                let sondentemperatur = (tempIndex - 113) + 740;
                     
                 updateValues(lambdawert, sondentemperatur);
             } else {
