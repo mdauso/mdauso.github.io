@@ -1,4 +1,3 @@
-        <script>
         let device;
         let targetDeviceName = 'HMSoft';
         let serialCharacteristic;
@@ -46,4 +45,4 @@
             document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
             document.getElementById('tempValue').textContent = tempValue.toString();      // Zeige Temperatur
         }
-    </script>
+    
