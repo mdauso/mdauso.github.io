@@ -80,9 +80,9 @@ function handleSerialData(event) {
                 console.log('Ungültiges Datenpaket empfangen:', data);
             }
         }
-/*
-        function updateValues(lambdawert, sondentemperatur_out) {
-        document.getElementById('lambdawert').textContent = lambdawert.toFixed(1); // Zeige Lambdawert (AFR)
-        document.getElementById('sondentemperatur_out').textContent = sondentemperatur_out.toString();      // Zeige Temperatur
- */           
+
+        function updateValues(lambdaValue, tempValue) {
+        document.getElementById('lambValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
+        document.getElementById('tempValue').textContent = tempValue.toString();   // Zeige Temperatur
+            
         }
