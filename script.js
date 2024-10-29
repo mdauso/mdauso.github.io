@@ -29,14 +29,12 @@
             let data = new Uint8Array(value.buffer);
 
             if (data.length === 8) {
-                // AFR-Wert: byte 0 geteilt durch 10
-                let lambdawert = data[0] / 10.0;
+                // Lambda-Wert: byte 0 geteilt durch 147
+                let lambdawert = data[0] / 147.0;
 
                 // Temperaturwert: byte 1 als Index für das Temperature_Array
                 let tempIndex = data[1];
-                let sondentemperatur = (tempIndex >= 0 && tempIndex < Temperature_Array.length) 
-                    ? Temperature_Array[tempIndex] 
-                    : '--'; // Fallback, falls der Index ungültig ist
+                let sondentemperatur = tempIndex - 113 + 740
 
                 updateValues(lambdawert, sondentemperatur);
             } else {
