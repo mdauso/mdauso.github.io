@@ -2,7 +2,7 @@
         let targetDeviceName = 'HMSoft'; // Ersetze dies mit dem Gerätenamen deines HC-10 oder eines anderen Geräts
         let serialCharacteristic;
 
-let LSU_4_9_Temperature_Array[] ={80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61, 60, 59, 58, 56, 55, 54, 52, 51, 50, 49, 48, 46, 45, 44, 43, 42, 
+let Temperature_Array[] ={80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61, 60, 59, 58, 56, 55, 54, 52, 51, 50, 49, 48, 46, 45, 44, 43, 42, 
                                   41, 40, 39, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 18, 17, 16, 15, 14, 13, 12, 11, 11, 10, 9, 8, 7, 6, 5, 5, 4, 3, 2, 
                                 1, 1, 0}; 
 
@@ -72,16 +72,16 @@ function handleSerialData(event) {
                  sondentemperatur=187; 
                 } 
                     
-                sondentemperatur =LSU_4_9_Temperature_Array[sondentemperatur-113]+740;
+                sondentemperatur_out =Temperature_Array[sondentemperatur-113]+740;
 
-                updateValues(lambdawert, sondentemperatur);
+                updateValues(lambdawert, sondentemperatur_out);
             } else {
                 console.log('Ungültiges Datenpaket empfangen:', data);
             }
         }
-
+/*
         function updateValues(lambdaValue, tempValue) {
             document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
             //document.getElementById('tempValue').textContent = tempValue.toString();      // Zeige Temperatur
-            
+ */           
         }
