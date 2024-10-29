@@ -72,16 +72,17 @@ function handleSerialData(event) {
                  sondentemperatur=187; 
                 } 
                     
-                sondentemperatur_out =Temperature_Array[sondentemperatur-113]+740;
+                //sondentemperatur_out =Temperature_Array[sondentemperatur-113]+740;
+                sondentemperatur_out =822;
 
                 updateValues(lambdawert, sondentemperatur_out);
             } else {
                 console.log('Ungültiges Datenpaket empfangen:', data);
             }
         }
-
+/*
         function updateValues(lambdawert, sondentemperatur_out) {
         document.getElementById('lambdawert').textContent = lambdawert.toFixed(1); // Zeige Lambdawert (AFR)
         document.getElementById('sondentemperatur_out').textContent = sondentemperatur_out.toString();      // Zeige Temperatur
-            
+ */           
         }
