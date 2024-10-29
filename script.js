@@ -102,11 +102,11 @@ function handleSerialData(event) {
                 
 
                 updateValues(lambdawert, sondentemperatur_out);
-
+}
 
         function updateValues(lambdaValue, tempValue) {
         document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2); // Zeige Lambdawert (AFR)
         document.getElementById('tempValue').textContent = tempValue.toString();   // Zeige Temperatur
             
         }
-}
+
