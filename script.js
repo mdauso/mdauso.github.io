@@ -46,7 +46,7 @@
         }
 
         function updateValues(lambdaValue, tempValue) {
-            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1); // Zeige Lambdawert (AFR)
+            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2); // Zeige Lambdawert (AFR)
             document.getElementById('tempValue').textContent = tempValue.toString();      // Zeige Temperatur
         }
 
