@@ -47,6 +47,8 @@ let Temperature_Array[] ={80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61
             document.getElementById('tempValue').textContent = tempValue.toFixed(0);     // Zeige die Sondentemperatur an
         }
         */
+
+/*
 function handleSerialData(event) {
             const value = event.target.value;
             let data = new Uint8Array(value.buffer);
@@ -84,7 +86,7 @@ function handleSerialData(event) {
             }
         }
 
-
+*/
 // Lambda-Wert: byte 0 geteilt durch 147
                 // let lambdawert = data[0];
                 let lambdawert = 150;
