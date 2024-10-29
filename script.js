@@ -58,8 +58,6 @@ function handleSerialData(event) {
                 // Lambda-Wert: byte 0 geteilt durch 147
                 let lambdawert = data[0];
 
-                                    
-
                 // Temperaturwert: byte 1 direkt als °C
                 let sondentemperatur = data[1];
 
@@ -67,10 +65,12 @@ function handleSerialData(event) {
                 { 
                 sondentemperatur=113; 
                 } 
+                    
                 if (sondentemperatur>187) 
                 { 
                  sondentemperatur=187; 
                 } 
+                    
                 sondentemperatur =LSU_4_9_Temperature_Array[sondentemperatur-113]+740;
 
                 updateValues(lambdawert, sondentemperatur);
