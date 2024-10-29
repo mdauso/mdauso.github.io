@@ -90,7 +90,7 @@ function handleSerialData(event) {
 */
 // Lambda-Wert: byte 0 geteilt durch 147
                 // let lambdawert = data[0];
-                let lambdawert = 150;
+                let lambdawert = 150 / 147;
 
                 // Temperaturwert: byte 1 direkt als °C
                 //let sondentemperatur = data[1];
