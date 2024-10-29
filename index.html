@@ -81,7 +81,7 @@
                 // Temperaturwert: byte 1 als Index für das Temperature_Array
                 let tempIndex = data[1];
                 
-                let sondentemperatur = Temperature_Array[tempIndex] - 113 + 740;
+                let sondentemperatur = Temperature_Array[tempIndex - 113] + 740;
 
                 updateValues(lambdawert, sondentemperatur);
             } else {
