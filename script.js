@@ -59,8 +59,8 @@ function handleSerialData(event) {
                 let lambdawert = data[0];
 
                 // Temperaturwert: byte 1 direkt als °C
-               //let sondentemperatur = data[1];
-                 let sondentemperatur = 113;
+                //let sondentemperatur = data[1];
+                let sondentemperatur = 113;
 
                 if (sondentemperatur<113) 
                 { 
