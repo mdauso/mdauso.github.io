@@ -140,12 +140,17 @@
                 console.warn("Unplausibler AFR:", AFR);
                 return;
             }
-/*
-            if (tempIndex < 0 || tempIndex >= Temperature_Array.length) {
-                console.warn("Unplausibler Temperaturindex:", tempIndex);
-                return;
+
+            if (tempIndex < 113)
+            {
+            tempIndex = 113;
             }
-*/
+            
+            if (tempIndex > 187)
+            {
+            tempIndex = 187;
+            }
+
             // Temperatur berechnen anhand des Arrays
             let sondentemperatur = Temperature_Array[tempIndex - 113] + 740;
 
