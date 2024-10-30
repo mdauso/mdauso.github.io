@@ -19,7 +19,7 @@
     <button id="connectBtn">Verbinden mit Gerät</button>
 
     <div class="data-container">
-        <div class="value-label">Lambdawert (AFR):</div>
+        <div class="value-label">Lambdawert:</div>
         <div id="lambdaValue" class="value">--</div>
     </div>
 
@@ -81,47 +81,21 @@
         function processPacket(data) {
             if (data.length !== 8) return; // Sicherheitscheck für Paketlänge
 
-            // Lambda-Wert: byte 0 geteilt durch 147
-                let lambdawert = parseInt(data[0]) / 147.0;
+            let lambdawert = parseInt(data[0]) / 147; // Lambda/Afr-Wert
+            let tempIndex = parseInt(data[1]);         // Temperaturindex
 
-                // Temperaturwert: byte 1 als Index für das Temperature_Array
-                let tempIndex = parseInt(data[1]);
+            // Überprüfung der Werte auf Plausibilität
+            if (lambdawert < 10 || lambdawert > 20) {
+                console.warn("Unplausibler Lambdawert:", lambdawert);
+                return;
+            }
 
             if (tempIndex < 0 || tempIndex >= Temperature_Array.length) {
                 console.warn("Unplausibler Temperaturindex:", tempIndex);
                 return;
             }
-            
 
-                if (tempIndex < 113)
-                {
-                    tempIndex = 113;
-                }
-
-                if (tempIndex > 187)
-                {
-                    tempIndex = 187;
-                }
-                
-                let sondentemperatur = Temperature_Array[tempIndex - 113] + 740;
-
-            // Überprüfung der Werte auf Plausibilität
-            if (lambdawert < (10 / 14.7) || lambdawert > (20 / 14.7)) {
-                console.warn("Unplausibler Lambdawert:", lambdawert);
-                return;
-            }
-
-            
-            
-
-                updateValues(lambdawert, sondentemperatur);
-            } else {
-                console.log('Ungültiges Datenpaket empfangen:', data);
-            }
-
-            
-
-            let sondentemperatur = Temperature_Array[tempIndex];
+            let sondentemperatur = Temperature_Array[tempIndex -113] + 740;
 
             console.log(`Lambdawert: ${lambdawert}, Temperatur: ${sondentemperatur}`);
             updateValues(lambdawert, sondentemperatur);
@@ -134,3 +108,4 @@
     </script>
 </body>
 </html>
+
