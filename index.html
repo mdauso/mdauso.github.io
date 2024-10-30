@@ -4,15 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serial Data Visualization</title>
-     <link rel="stylesheet" href="./style.css">
-    
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f0f0f0; }
+        h1 { color: #333; font-size: 24px; margin-bottom: 10px; }
+        .data-container { margin: 20px 0; }
+        .value-label { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .value { font-size: 36px; color: #007bff; margin-bottom: 20px; }
+        #connectBtn { padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+        #connectBtn:hover { background-color: #0056b3; }
+    </style>
 </head>
 <body>
-    <h1>MD Lambda View</h1>
+    <h1>Serial Data Visualization</h1>
     <button id="connectBtn">Connect to Device</button>
 
     <div class="data-container">
-        <div class="value-label">Lambda Value:</div>
+        <div class="value-label">AFR Value:</div>
         <div id="afrValue" class="value">--</div>
     </div>
 
@@ -30,12 +37,10 @@
         const START_CODE = 1;
         const GAP_TIME_MS = 40;
 
-       
-
         document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
                 device = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: 'HMSoft' }],
+                    filters: [{ name: 'HMSoft' }], // Changed device name to "HMSoft"
                     optionalServices: ['FFE0']
                 });
                 const server = await device.gatt.connect();
@@ -92,13 +97,13 @@
             }
 
             // Calculate and display AFR and temperature
-            const afrCode = afrCode / 147;
+            const lambdaValue = afrCode / 147;
             const temperature = tempCode;
             updateValues(afrValue, temperature);
         }
 
-        function updateValues(afrCode, temperature) {
-            document.getElementById('afrCode').textContent = afrCode.toFixed(2);
+        function updateValues(lambda, temperature) {
+            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1);
             document.getElementById('tempValue').textContent = temperature.toString();
         }
     </script>
