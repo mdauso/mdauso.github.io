@@ -30,6 +30,8 @@
         const START_CODE = 1;
         const GAP_TIME_MS = 40;
 
+        const lambda = 0;
+
         document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
                 device = await navigator.bluetooth.requestDevice({
@@ -90,13 +92,13 @@
             }
 
             // Calculate and display AFR and temperature
-            const afrValue = afrCode / 147;
+            const lambda = afrCode / 147;
             const temperature = tempCode;
             updateValues(afrValue, temperature);
         }
 
         function updateValues(afrValue, temperature) {
-            document.getElementById('afrValue').textContent = afrValue.toFixed(2);
+            document.getElementById('lambda').textContent = lambda.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
         }
     </script>
