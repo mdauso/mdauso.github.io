@@ -99,10 +99,10 @@
             // Calculate and display AFR and temperature
             const lambdaValue = afrCode / 147;
             const temperature = tempCode;
-            updateValues(afrValue, temperature);
+            updateValues(lambdaValue, temperature);
         }
 
-        function updateValues(lambda, temperature) {
+        function updateValues(lambdaValue, temperature) {
             document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1);
             document.getElementById('tempValue').textContent = temperature.toString();
         }
