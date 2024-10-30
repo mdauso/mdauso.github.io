@@ -84,9 +84,18 @@
             let lambdawert = parseInt(data[0]) / 10.0; // Lambda/Afr-Wert
             let tempIndex = parseInt(data[1]);         // Temperaturindex
 
-            let sondentemperatur = (tempIndex >= 0 && tempIndex < Temperature_Array.length) 
-                ? Temperature_Array[tempIndex] 
-                : '--'; // Gültigkeitsprüfung des Index
+            // Überprüfung der Werte auf Plausibilität
+            if (lambdawert < 10 || lambdawert > 20) {
+                console.warn("Unplausibler Lambdawert:", lambdawert);
+                return;
+            }
+
+            if (tempIndex < 0 || tempIndex >= Temperature_Array.length) {
+                console.warn("Unplausibler Temperaturindex:", tempIndex);
+                return;
+            }
+
+            let sondentemperatur = Temperature_Array[tempIndex];
 
             console.log(`Lambdawert: ${lambdawert}, Temperatur: ${sondentemperatur}`);
             updateValues(lambdawert, sondentemperatur);
@@ -99,4 +108,3 @@
     </script>
 </body>
 </html>
-
