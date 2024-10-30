@@ -5,34 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serielle Daten Visualisierung</title>
     <style>
-        /* Grundlegendes Styling */
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        h1 { color: #333; font-size: 30px; margin-bottom: 50px; }
+        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f0f0f0; }
+        h1 { color: #333; font-size: 24px; margin-bottom: 10px; }
         .data-container { margin: 20px 0; }
         .value-label { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
-        .value { font-size: 120px; color: #007bff; margin-bottom: 10px; }
-        #connectBtn {
-            padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white;
-            border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px;
-        }
+        .value { font-size: 36px; color: #007bff; margin-bottom: 20px; }
+        #connectBtn { padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
         #connectBtn:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
-    <h1>MD-Lambda View</h1>
-    <button id="connectBtn">Connect to BLE</button>
+    <h1>Serielle Daten Visualisierung</h1>
+    <button id="connectBtn">Verbinden mit Gerät</button>
 
     <div class="data-container">
-        <div class="value-label">Lambdawert:</div>
+        <div class="value-label">Lambdawert (AFR):</div>
         <div id="lambdaValue" class="value">--</div>
     </div>
 
@@ -43,7 +30,7 @@
 
     <script>
         let device;
-        let targetDeviceName = 'HMSoft';
+        let targetDeviceName = 'HC-10';
         let serialCharacteristic;
         let buffer = [];
 
@@ -95,25 +82,22 @@
             if (data.length !== 8) return; // Sicherheitscheck für Paketlänge
 
             // Lambda- und Temperaturwerte aus dem Datenpaket lesen
-            let AFR = parseInt(data[0]) / 10.0;         //Afr-Wert
+            let lambdawert = parseInt(data[0]) / 10.0; // Lambda/Afr-Wert
             let tempIndex = parseInt(data[1]);         // Temperaturindex
 
-            // Plausibilitätsprüfung: AFR im Bereich 10 - 20 AFR und Temperaturindex gültig
-            if (AFR < 10 || AFR > 20) {
-                console.warn("Unplausibler AFR-Wert:", AFR);
+            // Plausibilitätsprüfung: Lambda im Bereich 10 - 20 AFR und Temperaturindex gültig
+            if (lambdawert < 10 || lambdawert > 20) {
+                console.warn("Unplausibler Lambdawert:", lambdawert);
                 return;
             }
-/*
-            if (tempIndex < 113 || tempIndex > 187) {
+
+            if (tempIndex < 113 || tempIndex >= 187) {
                 console.warn("Unplausibler Temperaturindex:", tempIndex);
                 return;
- */           }
-            
-            //Lambdawert berechnen
-            let lambdawert = AFR / 14.7;
-            
+            }
+
             // Temperatur berechnen anhand des Arrays
-            let sondentemperatur = Temperature_Array[tempIndex - 113] + 740;
+            let sondentemperatur = Temperature_Array[tempIndex -113] + 740; 
 
             console.log(`Lambdawert: ${lambdawert}, Temperatur: ${sondentemperatur}`);
             updateValues(lambdawert, sondentemperatur);
