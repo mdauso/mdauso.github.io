@@ -76,10 +76,10 @@
 
             if (data.length === 8) {
                 // Lambda-Wert: byte 0 geteilt durch 147
-                let lambdawert = data[0] / 147.0;
+                let lambdawert = parseInt(data[0]) / 147.0;
 
                 // Temperaturwert: byte 1 als Index für das Temperature_Array
-                let tempIndex = data[1];
+                let tempIndex = parseInt(data[1]);
 
                 if (tempIndex < 113)
                 {
