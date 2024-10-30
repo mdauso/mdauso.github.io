@@ -4,34 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serielle Daten Visualisierung</title>
- <style>
-        /* Grundlegendes Styling */
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        h1 { color: #333; font-size: 30px; margin-bottom: 50px; }
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f0f0f0; }
+        h1 { color: #333; font-size: 24px; margin-bottom: 10px; }
         .data-container { margin: 20px 0; }
         .value-label { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
-        .value { font-size: 120px; color: #007bff; margin-bottom: 10px; }
-        #connectBtn {
-            padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white;
-            border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px;
-        }
+        .value { font-size: 36px; color: #007bff; margin-bottom: 20px; }
+        #connectBtn { padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
         #connectBtn:hover { background-color: #0056b3; }
     </style>
-
-    
-    
 </head>
 <body>
-    <h1>MD Lambda View</h1>
+    <h1>Serielle Daten Visualisierung</h1>
     <button id="connectBtn">Verbinden mit Gerät</button>
 
     <div class="data-container">
@@ -86,33 +70,24 @@
             for (let byte of data) {
                 buffer.push(byte);
 
-                if (buffer.length === 8) {
-                    processPacket(buffer);
-                    buffer = [];
+                // Wenn der Puffer 8 Bytes enthält, verarbeiten wir das Paket
+                if (buffer.length >= 8) {
+                    processPacket(buffer.slice(0, 8)); // Sende die ersten 8 Bytes zur Verarbeitung
+                    buffer = buffer.slice(8);          // Entferne die verarbeiteten 8 Bytes
                 }
             }
         }
 
         function processPacket(data) {
-             // Lambda-Wert: byte 0 geteilt durch 147
-                let lambdawert = parseInt(data[0]) / 147.0;
+            if (data.length !== 8) return; // Sicherheitscheck für Paketlänge
 
-                // Temperaturwert: byte 1 als Index für das Temperature_Array
-                let tempIndex = parseInt(data[1]);
+            let lambdawert = parseInt(data[0]) / 10.0; // Lambda/Afr-Wert
+            let tempIndex = parseInt(data[1]);         // Temperaturindex
 
-                if (tempIndex < 113)
-                {
-                    tempIndex = 113;
-                }
+            let sondentemperatur = (tempIndex >= 0 && tempIndex < Temperature_Array.length) 
+                ? Temperature_Array[tempIndex] 
+                : '--'; // Gültigkeitsprüfung des Index
 
-                if (tempIndex > 187)
-                {
-                    tempIndex = 187;
-                }
-                
-                let sondentemperatur = Temperature_Array[tempIndex - 113] + 740;
-
-               
             console.log(`Lambdawert: ${lambdawert}, Temperatur: ${sondentemperatur}`);
             updateValues(lambdawert, sondentemperatur);
         }
@@ -124,3 +99,4 @@
     </script>
 </body>
 </html>
+
