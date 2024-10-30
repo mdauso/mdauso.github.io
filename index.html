@@ -82,19 +82,22 @@
             if (data.length !== 8) return; // Sicherheitscheck für Paketlänge
 
             // AFR- und Temperaturwerte aus dem Datenpaket lesen
-            let AFR = parseInt(data[0]) / 10.0; // Afr-Wert
+            let AFR = parseInt(data[0]) / 10; // Afr-Wert
             let tempIndex = parseInt(data[1]);         // Temperaturindex
+           }
 
-            // Plausibilitätsprüfung: AFR im Bereich 10 - 20 AFR und Temperaturindex gültig
-            if (AFR < 10 || AFR > 20) {
-                console.warn("Unplausibler AFR-Wert:", AFR);
-                return;
-            }
+            if (tempIndex < 113) {
+                tempIndex = 113);}
 
-            if (tempIndex < 113 || tempIndex >= 187) {
-                console.warn("Unplausibler Temperaturindex:", tempIndex);
-                return;
-            }
+            if (tempIndex > 187){
+                tempIndex = 187);}
+
+            if (AFR < 10){
+                AFR = 10;}
+
+            if (AFR > 20){
+                AFR = 20;}
+                
 
             // Temperatur berechnen anhand des Arrays
             let sondentemperatur = Temperature_Array[tempIndex -113] + 740; 
