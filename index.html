@@ -90,13 +90,25 @@
         }
 
         function processPacket(data) {
-            let lambdawert = parseInt(data[0]) / 10.0;
-            let tempIndex = parseInt(data[1]);
+             // Lambda-Wert: byte 0 geteilt durch 147
+                let lambdawert = parseInt(data[0]) / 147.0;
 
-            let sondentemperatur = (tempIndex >= 0 && tempIndex < Temperature_Array.length) 
-                ? Temperature_Array[tempIndex] 
-                : '--';
+                // Temperaturwert: byte 1 als Index für das Temperature_Array
+                let tempIndex = parseInt(data[1]);
 
+                if (tempIndex < 113)
+                {
+                    tempIndex = 113;
+                }
+
+                if (tempIndex > 187)
+                {
+                    tempIndex = 187;
+                }
+                
+                let sondentemperatur = Temperature_Array[tempIndex - 113] + 740;
+
+               
             console.log(`Lambdawert: ${lambdawert}, Temperatur: ${sondentemperatur}`);
             updateValues(lambdawert, sondentemperatur);
         }
