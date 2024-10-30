@@ -81,13 +81,13 @@
         function processPacket(data) {
             if (data.length !== 8) return; // Sicherheitscheck für Paketlänge
 
-            // Lambda- und Temperaturwerte aus dem Datenpaket lesen
-            let lambdawert = parseInt(data[0]) / 10.0; // Lambda/Afr-Wert
+            // AFR- und Temperaturwerte aus dem Datenpaket lesen
+            let AFR = parseInt(data[0]) / 10.0; // Afr-Wert
             let tempIndex = parseInt(data[1]);         // Temperaturindex
 
-            // Plausibilitätsprüfung: Lambda im Bereich 10 - 20 AFR und Temperaturindex gültig
-            if (lambdawert < 10 || lambdawert > 20) {
-                console.warn("Unplausibler Lambdawert:", lambdawert);
+            // Plausibilitätsprüfung: AFR im Bereich 10 - 20 AFR und Temperaturindex gültig
+            if (AFR < 10 || AFR > 20) {
+                console.warn("Unplausibler AFR-Wert:", AFR);
                 return;
             }
 
@@ -99,12 +99,15 @@
             // Temperatur berechnen anhand des Arrays
             let sondentemperatur = Temperature_Array[tempIndex -113] + 740; 
 
+            // Lambda berechnen
+            let lambdawert = AFR / 14.7;
+
             console.log(`Lambdawert: ${lambdawert}, Temperatur: ${sondentemperatur}`);
             updateValues(lambdawert, sondentemperatur);
         }
 
         function updateValues(lambdaValue, tempValue) {
-            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1);
+            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2);
             document.getElementById('tempValue').textContent = tempValue.toString();
         }
     </script>
