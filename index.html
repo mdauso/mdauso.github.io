@@ -89,16 +89,28 @@
         }
 
         function processPacket(data) {
-            // Lambda-Wert und Temperatur extrahieren und konvertieren
-            let lambdawert = parseInt(data[0]) / 10.0; // byte 0 als Lambdawert (AFR) berechnen
-            let tempIndex = parseInt(data[1]);         // byte 1 als Index für das Temperature_Array
+            // Lambda-Wert: byte 0 geteilt durch 147
+                let lambdawert = parseInt(data[0]) / 147.0;
 
-            // Temperatur anhand des Arrays berechnen, falls der Index gültig ist
-            let sondentemperatur = (tempIndex >= 0 && tempIndex < Temperature_Array.length) 
-                ? Temperature_Array[tempIndex] 
-                : '--'; // Fallback, falls der Index ungültig ist
+                // Temperaturwert: byte 1 als Index für das Temperature_Array
+                let tempIndex = parseInt(data[1]);
 
-            updateValues(lambdawert, sondentemperatur);
+                if (tempIndex < 113)
+                {
+                    tempIndex = 113;
+                }
+
+                if (tempIndex > 187)
+                {
+                    tempIndex = 187;
+                }
+                
+                let sondentemperatur = Temperature_Array[tempIndex - 113] + 740;
+
+                updateValues(lambdawert, sondentemperatur);
+            } else {
+                console.log('Ungültiges Datenpaket empfangen:', data);
+            }
         }
 
         function updateValues(lambdaValue, tempValue) {
