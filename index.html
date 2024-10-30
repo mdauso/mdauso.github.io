@@ -92,7 +92,7 @@
             // Calculate AFR and temperature, and update display
             const lambda = afrCode / 147;
             const temperature = Temperature_Array[tempCode - 113] + 740;
-            updateValues(afrValue, temperature);
+            updateValues(lambda, temperature);
         }
 
         function updateValues(lambda, temperature) {
