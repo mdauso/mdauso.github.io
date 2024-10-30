@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serial Data Visualization</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f0f0f0; }
+        h1 { color: #333; font-size: 24px; margin-bottom: 10px; }
+        .data-container { margin: 20px 0; }
+        .value-label { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .value { font-size: 36px; color: #007bff; margin-bottom: 20px; }
+        #connectBtn { padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+        #connectBtn:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Serial Data Visualization</h1>
+    <button id="connectBtn">Connect to Device</button>
+
+    <div class="data-container">
+        <div class="value-label">AFR Value:</div>
+        <div id="afrValue" class="value">--</div>
+    </div>
+
+    <div class="data-container">
+        <div class="value-label">Sensor Temperature (°C):</div>
+        <div id="tempValue" class="value">--</div>
+    </div>
+
+    <script>
+        let device;
+        let serialCharacteristic;
+        let buffer = [];
+        let lastCharTime = 0;
+        let characterIndex = 0;
+        const CHARS_PER_FRAME = 9;
+        const START_CODE = 1;
+        const GAP_TIME_MS = 40;
+
+        let afrCode = 0;
+        let tempCode = 0;
+
+        document.getElementById('connectBtn').addEventListener('click', async () => {
+            try {
+                device = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: 'HC-10' }],
+                    optionalServices: ['FFE0']
+                });
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService('FFE0');
+                serialCharacteristic = await service.getCharacteristic('FFE1');
+                await serialCharacteristic.startNotifications();
+                serialCharacteristic.addEventListener('characteristicvaluechanged', handleSerialData);
+            } catch (error) {
+                console.error('Connection failed:', error);
+            }
+        });
+
+        function handleSerialData(event) {
+            const now = Date.now();
+            if (now - lastCharTime > GAP_TIME_MS) {
+                characterIndex = 0;
+                buffer = []; // Reset buffer on timeout gap
+            }
+            lastCharTime = now;
+
+            const data = new Uint8Array(event.target.value.buffer);
+            for (let byte of data) {
+                buffer.push(byte);
+
+                // Only process when we have enough bytes
+                if (buffer.length >= CHARS_PER_FRAME) {
+                    processFrame(buffer.slice(0, CHARS_PER_FRAME));
+                    buffer = buffer.slice(CHARS_PER_FRAME);
+                }
+            }
+        }
+
+        function processFrame(data) {
+            if (data[0] !== START_CODE) {
+                console.warn("Invalid start byte:", data[0]);
+                return;
+            }
+
+            afrCode = data[1];
+            tempCode = data[2];
+
+            // Verify filler bytes match the expected sequence
+            for (let i = 3; i < CHARS_PER_FRAME - 1; i++) {
+                if (data[i] !== i - 1) {
+                    console.warn("Filler byte mismatch at index", i, "value:", data[i]);
+                    return;
+                }
+            }
+
+            // Calculate AFR and temperature, and update display
+            const afrValue = afrCode / 10.0;
+            const temperature = tempCode;
+            updateValues(afrValue, temperature);
+        }
+
+        function updateValues(afrValue, temperature) {
+            document.getElementById('afrValue').textContent = afrValue.toFixed(1);
+            document.getElementById('tempValue').textContent = temperature.toString();
+        }
+    </script>
+</body>
+</html>
