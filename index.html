@@ -82,7 +82,7 @@
             if (data.length !== 8) return; // Sicherheitscheck für Paketlänge
 
             // AFR- und Temperaturwerte aus dem Datenpaket lesen
-            let AFR = parseInt(data[0]) / 10; // Afr-Wert
+            let AFR = parseInt(data[0]); // Afr-Wert
             let tempIndex = parseInt(data[1]);         // Temperaturindex
            }
 
@@ -103,7 +103,7 @@
             let sondentemperatur = Temperature_Array[tempIndex -113] + 740; 
 
             // Lambda berechnen
-            let lambdawert = AFR / 14.7;
+            let lambdawert = AFR / 147;
 
             console.log(`Lambdawert: ${lambdawert}, Temperatur: ${sondentemperatur}`);
             updateValues(lambdawert, sondentemperatur);
