@@ -85,7 +85,7 @@
             let tempIndex = parseInt(data[1]);         // Temperaturindex
 
             // Überprüfung der Werte auf Plausibilität
-            if (lambdawert < 10 || lambdawert > 20) {
+            if (lambdawert < 1.36 || lambdawert > 0.68) {
                 console.warn("Unplausibler Lambdawert:", lambdawert);
                 return;
             }
