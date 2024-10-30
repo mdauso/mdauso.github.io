@@ -97,11 +97,11 @@
         function processPacket(data) {
             if (data.length !== 8) return; // Sicherheitscheck für Paketlänge
 
-            let lambdawert = parseInt(data[0]) / 147; // Lambda/Afr-Wert
+            let lambdawert = (parseInt(data[0])) / 147; // Lambda/Afr-Wert
             let tempIndex = parseInt(data[1]);         // Temperaturindex
 
             // Überprüfung der Werte auf Plausibilität
-            if (lambdawert < 1.36 || lambdawert > 0.68) {
+            if (lambdawert < 0.68|| lambdawert > 1.36) {
                 console.warn("Unplausibler Lambdawert:", lambdawert);
                 return;
             }
