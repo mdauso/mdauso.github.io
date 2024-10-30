@@ -30,7 +30,7 @@
         const START_CODE = 1;
         const GAP_TIME_MS = 40;
 
-        let lambda = 0;
+        const lambda = 0;
 
         document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
@@ -97,7 +97,7 @@
             updateValues(afrValue, temperature);
         }
 
-        function updateValues(afrValue, temperature) {
+        function updateValues(lambda, temperature) {
             document.getElementById('lambda').textContent = lambda.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
         }
