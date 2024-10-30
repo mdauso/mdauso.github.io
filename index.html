@@ -20,7 +20,7 @@
 
     <div class="data-container">
         <div class="value-label">Lambda Value:</div>
-        <div id="afrValue" class="value">--</div>
+        <div id="lambda" class="value">--</div>
     </div>
 
     <div class="data-container">
@@ -103,7 +103,7 @@
         }
 
         function updateValues(lambdaValue, temperature) {
-            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(1);
+            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
         }
     </script>
