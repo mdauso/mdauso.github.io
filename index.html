@@ -89,10 +89,7 @@
 
 
         function processPacket(data) {
-            const value = event.target.value;
-            let data = new Uint8Array(value.buffer);
-
-            if (data.length === 8) {
+        
                 // Lambda-Wert: byte 0 geteilt durch 147
                 let lambdawert = parseInt(data[0]) / 147.0;
 
