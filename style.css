@@ -12,7 +12,7 @@ body {
         h1 {
             color: #333;
             font-size: 30px;
-            margin-bottom: 30px;
+            margin-bottom: 45px;
             
         }
 
@@ -24,8 +24,7 @@ body {
         }
 
         .data-container {
-            align-items: center;
-            margin: 20px 0;
+             margin: 20px 0;
         }
 
         .value-label {
