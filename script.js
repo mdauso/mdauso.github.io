@@ -73,22 +73,22 @@
             }
 
             // Calculate and display AFR and temperature
-            const afrValue = afrCode / 10.0;
+            const lambdaValue = afrCode / 147;
             const temperature = getTemperature(tempCode);
-            updateValues(afrValue, temperature);
+            updateValues(lambdaValue, temperature);
         }
 
         function getTemperature(index) {
             // Ensure index is within bounds of the array
             if (index >= 0 && index < LSU_4_9_Temperature_Array.length) {
-                return LSU_4_9_Temperature_Array[index];
+                return (LSU_4_9_Temperature_Array[index] + 740);
             } else {
                 console.warn("Temperature index out of range:", index);
                 return 0; // Return 0 if index is out of bounds
             }
         }
 
-        function updateValues(afrValue, temperature) {
-            document.getElementById('afrValue').textContent = afrValue.toFixed(1);
+        function updateValues(lambdaValue, temperature) {
+            document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
         }
