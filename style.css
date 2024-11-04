@@ -25,17 +25,18 @@ body {
             
         }
 
-     /*   .data-container {
+     .data-container {
              margin: 20px 0;
         }
-*/
 
+/*
             .data-container {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
             }
+*/
 
         .value-label {
             font-size: 20px;
