@@ -91,26 +91,5 @@
         function updateValues(lambdaValue, temperature) {
             document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
-            //document.getElementById('fullscreenlambdaValue').textContent = lambdaValue.toFixed(2);
+            
         }
-/*
-// Detect screen orientation change and show full-screen Lambda in landscape mode
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > window.innerHeight) {
-                // Landscape mode
-                document.querySelector('h1').style.display = 'none';
-                document.getElementById('connectBtn').style.display = 'none';
-                document.querySelectorAll('.data-container').forEach(el => el.style.display = 'none');
-                document.getElementById('fullscreenlambdaValue').style.display = 'block';
-            } else {
-                // Portrait mode
-                document.querySelector('h1').style.display = 'block';
-                document.getElementById('connectBtn').style.display = 'block';
-                document.querySelectorAll('.data-container').forEach(el => el.style.display = 'block');
-                document.getElementById('fullscreenlambdaValue').style.display = 'none';
-            }
-        });
-
-        // Initial check for screen orientation on page load
-        window.dispatchEvent(new Event('resize'));
-*/
