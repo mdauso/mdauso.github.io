@@ -91,9 +91,9 @@
         function updateValues(lambdaValue, temperature) {
             document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
-            document.getElementById('fullscreenlambdaValue').textContent = lambdaValue.toFixed(2);
+            //document.getElementById('fullscreenlambdaValue').textContent = lambdaValue.toFixed(2);
         }
-
+/*
 // Detect screen orientation change and show full-screen Lambda in landscape mode
         window.addEventListener('resize', () => {
             if (window.innerWidth > window.innerHeight) {
@@ -113,3 +113,4 @@
 
         // Initial check for screen orientation on page load
         window.dispatchEvent(new Event('resize'));
+*/
