@@ -70,3 +70,5 @@ body {
         #connectBtn:hover {
             background-color: #0056b3;
         }
+
+.fullscreen-value { display: none; font-size: 80px; color: #007bff; }
