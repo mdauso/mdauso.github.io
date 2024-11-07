@@ -22,16 +22,18 @@
         }
         .data-container { 
             margin: 20px 0; 
+            text-align: center;
         }
         .value-label { 
-            font-size: 20px; 
+            font-size: 24px; 
             font-weight: bold; 
             margin-bottom: 5px; 
         }
-        .value { 
-            font-size: 36px; 
+        .lambda-value { 
+            font-size: 160px; 
             color: #007bff; 
             margin-bottom: 20px; 
+            text-align: center; 
         }
         #connectBtn { 
             padding: 10px 20px; 
@@ -46,20 +48,6 @@
         #connectBtn:hover { 
             background-color: #0056b3; 
         }
-        /* Fullscreen Lambda-Anzeige im Querformat zentriert */
-        .fullscreen-container {
-            display: none; 
-            justify-content: center; 
-            align-items: center; 
-            width: 100vw; 
-            height: 100vh; 
-            flex-direction: column; 
-            background-color: #f0f0f0;
-        }
-        .fullscreen-value { 
-            font-size: 80px; 
-            color: #007bff; 
-        }
     </style>
 </head>
 <body>
@@ -67,8 +55,8 @@
     <button id="connectBtn">Connect to Device</button>
 
     <div class="data-container">
-        <div class="value-label">AFR Value:</div>
-        <div id="afrValue" class="value">--</div>
+        <div class="value-label">Lambda Value:</div>
+        <div id="lambdaValue" class="lambda-value">--</div>
     </div>
 
     <div class="data-container">
@@ -79,10 +67,6 @@
     <div class="data-container">
         <div class="value-label">Voltage (V):</div>
         <div id="voltageValue" class="value">--</div>
-    </div>
-
-    <div id="fullscreenContainer" class="fullscreen-container">
-        <div id="fullscreenAFR" class="fullscreen-value">--</div>
     </div>
 
     <script>
@@ -141,20 +125,18 @@
 
             const afrCode = data[1];
             const tempCode = data[2];
-            const voltageCode = data[3]; // Der vierte Wert im Datenpaket
-
-           
+            const voltageCode = data[3];
 
             const afrValue = afrCode / 147;
             const temperature = getTemperature(tempCode);
-            const voltage = voltageCode / 10.0; // Annahme: der Spannungscode in 1/10 Volt
+            const voltage = voltageCode / 10.0;
 
             updateValues(afrValue, temperature, voltage);
         }
 
         function getTemperature(index) {
             if (index >= 0 && index < LSU_4_9_Temperature_Array.length) {
-                return LSU_4_9_Temperature_Array[index] + 740);
+                return (LSU_4_9_Temperature_Array[index] + 740);
             } else {
                 console.warn("Temperature index out of range:", index);
                 return 0;
@@ -162,29 +144,10 @@
         }
 
         function updateValues(afrValue, temperature, voltage) {
-            document.getElementById('afrValue').textContent = afrValue.toFixed(1);
+            document.getElementById('lambdaValue').textContent = afrValue.toFixed(1);
             document.getElementById('tempValue').textContent = temperature.toString();
             document.getElementById('voltageValue').textContent = voltage.toFixed(1);
-            document.getElementById('fullscreenAFR').textContent = afrValue.toFixed(1);
         }
-
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > window.innerHeight) {
-                document.body.style.flexDirection = 'row'; 
-                document.querySelector('h1').style.display = 'none';
-                document.getElementById('connectBtn').style.display = 'none';
-                document.querySelectorAll('.data-container').forEach(el => el.style.display = 'none');
-                document.getElementById('fullscreenContainer').style.display = 'flex';
-            } else {
-                document.body.style.flexDirection = 'column';
-                document.querySelector('h1').style.display = 'block';
-                document.getElementById('connectBtn').style.display = 'block';
-                document.querySelectorAll('.data-container').forEach(el => el.style.display = 'block');
-                document.getElementById('fullscreenContainer').style.display = 'none';
-            }
-        });
-
-        window.dispatchEvent(new Event('resize'));
     </script>
 </body>
 </html>
