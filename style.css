@@ -22,9 +22,11 @@ body {
             color: #333;
             font-size: 15px;
             margin-bottom: 5px;
-            margin-top: 10px;
             
         }
+
+
+
 
          .data-container {
              display: flex;
@@ -44,6 +46,10 @@ body {
             }
 
 
+
+
+
+
        .value-label {
              font-size: 20px;
              color: #333;
@@ -51,14 +57,7 @@ body {
              
         }
 
-        .value-label1 {
-             font-size: 20px;
-             color: #333;;
-             margin-right: 10px;           /* Abstand zwischen Label und Wert */
-             margin-bottom: 10px;
-        }
-
-        .value {
+       .value {
             font-size: 160px;
             color: #007bff;
             text-align: center;
@@ -66,14 +65,32 @@ body {
             
         }
 
-        .value_1 {
+
+
+
+
+
+
+       .value-label1 {
+             font-size: 20px;
+             color: #333;;
+             margin-right: 10px;           /* Abstand zwischen Label und Wert */
+             margin-bottom: 10px;
+        }
+
+       .value_1 {
             font-size: 20px;
             color: #333;
             margin-right: 10px;           /* Abstand zwischen Label und Wert */
             margin-bottom: 10px;
         }
             
-            
+
+
+
+
+
+
         }
 
         #connectBtn {
