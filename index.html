@@ -60,6 +60,13 @@
         #connectBtn:hover { 
             background-color: #0056b3; 
         }
+
+         #bottomImage {
+            position: absolute;
+            bottom: 10px; /* Abstand vom unteren Rand */
+            width: 100px; /* Angepasste Breite des Bildes */
+            height: auto; /* Höhe automatisch an die Breite anpassen */
+        }
     </style>
 </head>
 <body>
@@ -83,6 +90,10 @@
 
      <!-- Button zum Wechseln zur Graph-Seite -->
     <button onclick="window.location.href='Information.html'">More Info</button>
+
+    <!-- Bild am unteren Ende der Seite -->
+    <img id="bottomImage" src="https://openecu.com/wp-content/uploads/2015/11/BoschLSU.jpg" alt="Descriptive Alt Text">
+
 
     <script>
         let device;
