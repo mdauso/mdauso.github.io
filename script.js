@@ -77,7 +77,7 @@
             const lambdaValue = afrCode / 147;
             const temperature = getTemperature(tempCode);
             const vccValue = vccCode / 10;
-            updateValues(lambdaValue, temperature, vccCode);
+            updateValues(lambdaValue, temperature, vccValue);
         }
 
         function getTemperature(index) {
