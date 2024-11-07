@@ -35,6 +35,13 @@ body {
             max-width: 300px;
             }
 
+            .data-container1 {
+                display: flex;               /* Flexbox zum Anordnen der Elemente in einer Zeile */
+                        align-items: center;          /* Vertikale Ausrichtung zentrieren */
+            font-family: Arial, sans-serif;
+            margin: 10px 0;
+            }
+
 
        .value-label {
         font-size: 20px;
