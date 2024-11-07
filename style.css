@@ -44,9 +44,8 @@ body {
 
 
        .value-label {
-        font-size: 20px;
         font-weight: bold;
-        margin-right: 5px;
+        margin-right: 10px;           /* Abstand zwischen Label und Wert */
         }
 
         .value {
@@ -58,11 +57,8 @@ body {
         }
 
             .value_1 {
-            font-size: 35px;
-            color: #007bff;
-            text-align: right;
-            margin-bottom: 10px;
-            
+            font-size: 1.2em;
+            color: #333;
         }
 
         #connectBtn {
