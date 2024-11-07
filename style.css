@@ -52,7 +52,7 @@ body {
         .value-label1 {
              font-size: 20px;
              color: #333;;
-             margin-right: 10px;           /* Abstand zwischen Label und Wert */
+             margin-right: 20px;           /* Abstand zwischen Label und Wert */
         }
 
         .value {
