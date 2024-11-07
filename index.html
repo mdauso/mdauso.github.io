@@ -143,17 +143,7 @@
             const tempCode = data[2];
             const voltageCode = data[3]; // Der vierte Wert im Datenpaket
 
-            for (let i = 3; i <= 7; i++) {
-                if (data[i] !== i - 1) {
-                    console.warn("Filler byte mismatch at index", i, "value:", data[i]);
-                    return;
-                }
-            }
-
-            if (data[8] !== afrCode) {
-                console.warn("AFR repeat mismatch at byte 8:", data[8]);
-                return;
-            }
+           
 
             const afrValue = afrCode / 10.0;
             const temperature = getTemperature(tempCode);
