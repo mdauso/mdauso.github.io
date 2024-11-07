@@ -68,7 +68,7 @@
                 return;
             }
 
-            // Calculate and display AFR and temperature
+            // Calculate and display Lambda, Temperature and Voltage
             const lambdaValue = afrCode / 147;
             const temperature = getTemperature(tempCode);
             const vccValue = vccCode / 10;
