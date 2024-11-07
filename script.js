@@ -59,13 +59,8 @@
             const tempCode = data[2];
             const vccCode = data[3];
 
-            // Verify filler bytes match the expected sequence (3, 4, 5, 6)
-            for (let i = 4; i <= 7; i++) {
-                if (data[i] !== i - 1) {
-                    console.warn("Filler byte mismatch at index", i, "value:", data[i]);
-                    return;
-                }
-            }
+            
+            
 
             // Check if byte 8 repeats AFR value (data[1])
             if (data[8] !== afrCode) {
