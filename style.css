@@ -39,7 +39,7 @@ body {
              display: flex;               /* Flexbox zum Anordnen der Elemente in einer Zeile */
              align-items: left;          /* Vertikale Ausrichtung zentrieren */
              font-family: Arial, sans-serif;
-             margin: 10px 0;
+             margin-left: 20px;
             }
 
 
