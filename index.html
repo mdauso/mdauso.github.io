@@ -145,7 +145,7 @@
 
            
 
-            const afrValue = afrCode / 10.0;
+            const afrValue = afrCode / 147;
             const temperature = getTemperature(tempCode);
             const voltage = voltageCode / 10.0; // Annahme: der Spannungscode in 1/10 Volt
 
@@ -154,7 +154,7 @@
 
         function getTemperature(index) {
             if (index >= 0 && index < LSU_4_9_Temperature_Array.length) {
-                return LSU_4_9_Temperature_Array[index];
+                return LSU_4_9_Temperature_Array[index] + 740);
             } else {
                 console.warn("Temperature index out of range:", index);
                 return 0;
