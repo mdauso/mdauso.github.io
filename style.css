@@ -47,6 +47,11 @@ body {
              font-size: 20px;
              color: #333;;
              
+        }
+
+        .value-label1 {
+             font-size: 20px;
+             color: #333;;
              margin-right: 10px;           /* Abstand zwischen Label und Wert */
         }
 
