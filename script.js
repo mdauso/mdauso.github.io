@@ -57,6 +57,7 @@
 
             const afrCode = data[1];
             const tempCode = data[2];
+            const vccCode = data[3];
 
             // Verify filler bytes match the expected sequence (3, 4, 5, 6)
             for (let i = 4; i <= 7; i++) {
@@ -75,7 +76,8 @@
             // Calculate and display AFR and temperature
             const lambdaValue = afrCode / 147;
             const temperature = getTemperature(tempCode);
-            updateValues(lambdaValue, temperature);
+            const vccValue = vccCode / 10;
+            updateValues(lambdaValue, temperature, vccCode);
         }
 
         function getTemperature(index) {
@@ -88,8 +90,9 @@
             }
         }
 
-        function updateValues(lambdaValue, temperature) {
+        function updateValues(lambdaValue, temperature, vccCode) {
             document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
+            document.getElementById('vccValue').textContent = vccValue.toString(1);
             
         }
