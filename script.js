@@ -90,7 +90,7 @@
             }
         }
 
-        function updateValues(lambdaValue, temperature, vccCode) {
+        function updateValues(lambdaValue, temperature, vccValue) {
             document.getElementById('lambdaValue').textContent = lambdaValue.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
             document.getElementById('vccValue').textContent = vccValue.toString(1);
