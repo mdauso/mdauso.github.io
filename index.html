@@ -10,7 +10,8 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            justify-content: center; 
+            justify-content: flex-start; /* Nach oben verschieben */
+            padding-top: 20px; /* Platz nach oben hinzufügen */
             height: 100vh; 
             margin: 0; 
             background-color: #f0f0f0; 
@@ -18,7 +19,7 @@
         h1 { 
             color: #333; 
             font-size: 24px; 
-            margin-bottom: 10px; 
+            margin-bottom: 5px; /* Weniger Abstand zur Überschrift */
         }
         .data-container { 
             margin: 20px 0; 
@@ -54,7 +55,7 @@
             border: none; 
             border-radius: 5px; 
             cursor: pointer; 
-            margin-bottom: 20px; 
+            margin-bottom: 30px; /* Abstand unter dem Button erhöhen */
         }
         #connectBtn:hover { 
             background-color: #0056b3; 
@@ -62,7 +63,7 @@
     </style>
 </head>
 <body>
-    <h1>Serial Data Visualization</h1>
+    <h1>MD Lambda View</h1>
     <button id="connectBtn">Connect to Device</button>
 
     <div class="data-container">
@@ -147,7 +148,7 @@
 
         function getTemperature(index) {
             if (index >= 0 && index < LSU_4_9_Temperature_Array.length) {
-                return (LSU_4_9_Temperature_Array[index] + 147);
+                return (LSU_4_9_Temperature_Array[index] +740);
             } else {
                 console.warn("Temperature index out of range:", index);
                 return 0;
@@ -155,7 +156,7 @@
         }
 
         function updateValues(afrValue, temperature, voltage) {
-            document.getElementById('lambdaValue').textContent = afrValue.toFixed(1);
+            document.getElementById('lambdaValue').textContent = afrValue.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
             document.getElementById('voltageValue').textContent = voltage.toFixed(1);
         }
