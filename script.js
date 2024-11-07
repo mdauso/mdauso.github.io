@@ -59,7 +59,13 @@
             const tempCode = data[2];
             const vccCode = data[3];
 
-            
+                
+            for (let i = 3; i <= 7; i++) {
+                if (data[i] !== i - 1) {
+                    console.warn("Filler byte mismatch at index", i, "value:", data[i]);
+                    return;
+                }
+            }
             
 
             // Check if byte 8 repeats AFR value (data[1])
