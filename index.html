@@ -113,7 +113,7 @@
         document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
                 device = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: 'HMSoft' }],
+                    filters: [{ name: 'MD-Lambda' }],
                     optionalServices: ['FFE0']
                 });
                 const server = await device.gatt.connect();
