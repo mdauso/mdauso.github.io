@@ -16,7 +16,7 @@
         document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
                 device = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: 'HMSoft' }], // Changed device name to "HMSoft"
+                    filters: [{ name: 'MD-Lambda' }], // Changed device name to "MD-Lambda"
                     optionalServices: ['FFE0']
                 });
                 const server = await device.gatt.connect();
