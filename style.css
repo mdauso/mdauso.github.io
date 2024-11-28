@@ -47,7 +47,7 @@ body {
             align-items: center;
             font-size: 20px; /* Kleinere Schriftgröße für Temperatur und Spannung */
             color: #333;
-            margin-bottom: 30px; 
+            margin-bottom: 10px; 
         }
 
         .small-value { 
