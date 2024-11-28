@@ -14,16 +14,19 @@ body {
             font-size: 35px; 
             margin-bottom: 10px; /* Weniger Abstand zur Überschrift */
         }
+
         .data-container { 
             margin: 20px 0; 
             text-align: center;
         }
+
         .value-label { 
             font-size: 20px; 
             font-weight: bold; 
             color: #555;
             margin-right: 10px;
         }
+
         .lambda-value { 
             font-size: 160px; 
             font-weight: bold; 
@@ -31,16 +34,27 @@ body {
             margin-bottom: 20px; 
             text-align: center; 
         }
+
         .small-value-container {
             display: flex;
             align-items: center;
             font-size: 20px; /* Kleinere Schriftgröße für Temperatur und Spannung */
             color: #333;
         }
+
+        .spacer {
+            display: flex;
+            align-items: center;
+            font-size: 20px; /* Kleinere Schriftgröße für Temperatur und Spannung */
+            color: #333;
+            margin-bottom: 20px; 
+        }
+
         .small-value { 
             margin-left: 5px;
             color: #007bff;
         }
+
         #connectBtn { 
             padding: 10px 20px; 
             font-size: 16px; 
