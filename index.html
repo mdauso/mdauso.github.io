@@ -133,8 +133,8 @@
             const afrValue = afrCode / 147;
             const temperature = getTemperature(tempCode);
             const voltage = voltageCode / 10.0;
-            const rpm = rpmCode * 50; // Beispielskalierung für RPM
-            const throttle = throttleCode * 0.4; // Beispielskalierung für Drosselklappenstellung
+            const rpm = rpmCode * 33; // Skalierung für RPM
+            const throttle = throttleCode; // Skalierung für Drosselklappenstellung
 
             updateValues(afrValue, temperature, voltage, rpm, throttle);
             saveData(afrValue, temperature, voltage, rpm, throttle); // Speichert die Werte
