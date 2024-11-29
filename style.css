@@ -4,7 +4,7 @@ body {
             flex-direction: column; 
             align-items: center; 
             justify-content: flex-start; /* Nach oben verschieben */
-            padding-top: 20px; /* Platz nach oben hinzufügen */
+            padding-top: 10px; /* Platz nach oben hinzufügen */
             height: 100vh; 
             margin: 0; 
             background-color: #f0f0f0; 
