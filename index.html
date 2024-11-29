@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-     <h1>MD Lambda View</h1>
+    <h1>MD Lambda View</h1>
 
-   <div class="spacer">
+    <div class="spacer">
         <div class="value-label"> </div>
     </div>
     
@@ -26,6 +26,16 @@
     </div>
 
     <div class="data-container small-value-container">
+        <div class="value-label">Engine RPM (1/min):</div>
+        <div id="rpmValue" class="small-value">--</div>
+    </div>
+
+    <div class="data-container small-value-container">
+        <div class="value-label">Throttle Position (%):</div>
+        <div id="throttleValue" class="small-value">--</div>
+    </div>
+
+    <div class="data-container small-value-container">
         <div class="value-label">Voltage (V):</div>
         <div id="voltageValue" class="small-value">--</div>
     </div>
@@ -34,17 +44,12 @@
         <div class="value-label"> </div>
     </div>
 
-    <!-- Button zum Anzeigen der gespeicherten Daten -->
-    <button id="viewStoredData">View Stored Data</button>
-
-     
-
-    <div class="spacer">
-        <div class="value-label"> </div>
-    </div>
-
-   <!-- Button zum Wechseln zur Graph-Seite -->
+    <!-- Button zum Wechseln zur Graph-Seite -->
     <button onclick="window.location.href='Information.html'">More Info</button>
+
+    <!-- Buttons für gespeicherte Daten -->
+    <button id="viewStoredData">View Stored Data</button>
+    <button id="exportData">Export Data as TXT</button>
 
     <script>
         let device;
@@ -103,42 +108,47 @@
             const afrCode = data[1];
             const tempCode = data[2];
             const voltageCode = data[3];
+            const rpmCode = data[4];
+            const throttleCode = data[5];
 
             const afrValue = afrCode / 147;
             const temperature = getTemperature(tempCode);
             const voltage = voltageCode / 10.0;
+            const rpm = rpmCode * 50; // Beispielskalierung für RPM
+            const throttle = throttleCode * 0.4; // Beispielskalierung für Drosselklappenstellung
 
-            updateValues(afrValue, temperature, voltage);
-            saveData(afrValue, temperature, voltage); // Speichert die Werte
+            updateValues(afrValue, temperature, voltage, rpm, throttle);
+            saveData(afrValue, temperature, voltage, rpm, throttle); // Speichert die Werte
         }
 
         function getTemperature(index) {
             if (index >= 0 && index < LSU_4_9_Temperature_Array.length) {
-                return (LSU_4_9_Temperature_Array[index] +740);
+                return (LSU_4_9_Temperature_Array[index] + 740);
             } else {
                 console.warn("Temperature index out of range:", index);
                 return 0;
             }
         }
 
-        function updateValues(afrValue, temperature, voltage) {
+        function updateValues(afrValue, temperature, voltage, rpm, throttle) {
             document.getElementById('lambdaValue').textContent = afrValue.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
             document.getElementById('voltageValue').textContent = voltage.toFixed(1);
+            document.getElementById('rpmValue').textContent = rpm.toString();
+            document.getElementById('throttleValue').textContent = throttle.toFixed(1);
         }
 
-        function saveData(afrValue, temperature, voltage) {
-            // Hole existierende Daten aus localStorage
+        function saveData(afrValue, temperature, voltage, rpm, throttle) {
             const existingData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            // Füge neue Daten hinzu
             const newData = { 
                 afrValue: afrValue.toFixed(2), 
                 temperature: temperature, 
-                voltage: voltage.toFixed(1), 
+                voltage: voltage.toFixed(1),
+                rpm: rpm,
+                throttle: throttle.toFixed(1),
                 timestamp: new Date().toISOString()
             };
             existingData.push(newData);
-            // Speichere die aktualisierte Liste
             localStorage.setItem('sensorData', JSON.stringify(existingData));
         }
 
@@ -154,9 +164,35 @@
                 output += `- Lambda Value: ${entry.afrValue}\n`;
                 output += `- Temperature: ${entry.temperature}\n`;
                 output += `- Voltage: ${entry.voltage}\n`;
+                output += `- Engine RPM: ${entry.rpm}\n`;
+                output += `- Throttle Position: ${entry.throttle}%\n`;
                 output += `- Timestamp: ${entry.timestamp}\n\n`;
             });
             alert(output);
+        });
+
+        document.getElementById('exportData').addEventListener('click', () => {
+            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            if (storedData.length === 0) {
+                alert('No data available to export!');
+                return;
+            }
+            let txtContent = 'Stored Sensor Data:\n\n';
+            storedData.forEach((entry, index) => {
+                txtContent += `Entry ${index + 1}:\n`;
+                txtContent += `- Lambda Value: ${entry.afrValue}\n`;
+                txtContent += `- Temperature: ${entry.temperature}\n`;
+                txtContent += `- Voltage: ${entry.voltage}\n`;
+                txtContent += `- Engine RPM: ${entry.rpm}\n`;
+                txtContent += `- Throttle Position: ${entry.throttle}%\n`;
+                txtContent += `- Timestamp: ${entry.timestamp}\n\n`;
+            });
+
+            const blob = new Blob([txtContent], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'sensor_data.txt';
+            link.click();
         });
     </script>
 </body>
