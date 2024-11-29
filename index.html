@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MD Lambda View</title>
     <link rel="stylesheet" href="./style.css">
-    
 </head>
 <body>
      <h1>MD Lambda View</h1>
@@ -38,8 +37,8 @@
      <!-- Button zum Wechseln zur Graph-Seite -->
     <button onclick="window.location.href='Information.html'">More Info</button>
 
-    
-
+    <!-- Button zum Anzeigen der gespeicherten Daten -->
+    <button id="viewStoredData">View Stored Data</button>
 
     <script>
         let device;
@@ -104,6 +103,7 @@
             const voltage = voltageCode / 10.0;
 
             updateValues(afrValue, temperature, voltage);
+            saveData(afrValue, temperature, voltage); // Speichert die Werte
         }
 
         function getTemperature(index) {
@@ -120,6 +120,38 @@
             document.getElementById('tempValue').textContent = temperature.toString();
             document.getElementById('voltageValue').textContent = voltage.toFixed(1);
         }
+
+        function saveData(afrValue, temperature, voltage) {
+            // Hole existierende Daten aus localStorage
+            const existingData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            // Füge neue Daten hinzu
+            const newData = { 
+                afrValue: afrValue.toFixed(2), 
+                temperature: temperature, 
+                voltage: voltage.toFixed(1), 
+                timestamp: new Date().toISOString()
+            };
+            existingData.push(newData);
+            // Speichere die aktualisierte Liste
+            localStorage.setItem('sensorData', JSON.stringify(existingData));
+        }
+
+        document.getElementById('viewStoredData').addEventListener('click', () => {
+            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            if (storedData.length === 0) {
+                alert('No data stored yet!');
+                return;
+            }
+            let output = 'Stored Data:\n\n';
+            storedData.forEach((entry, index) => {
+                output += `Entry ${index + 1}:\n`;
+                output += `- Lambda Value: ${entry.afrValue}\n`;
+                output += `- Temperature: ${entry.temperature}\n`;
+                output += `- Voltage: ${entry.voltage}\n`;
+                output += `- Timestamp: ${entry.timestamp}\n\n`;
+            });
+            alert(output);
+        });
     </script>
 </body>
 </html>
