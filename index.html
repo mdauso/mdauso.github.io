@@ -187,31 +187,22 @@
                 output += `- Throttle Position: ${entry.throttle}%\n`;
                 output += `- Timestamp: ${entry.timestamp}\n\n`;
             });
-            alert(output);
-        });
-document.getElementById('exportData').addEventListener('click', () => {
+            
+            
+            document.getElementById('exportData').addEventListener('click', () => {
     const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
     if (storedData.length === 0) {
         alert('No data available to export!');
         return;
     }
 
-    // Text-Inhalt vorbereiten
-    let txtContent = 'Stored Sensor Data:\n\n';
-    storedData.forEach((entry, index) => {
-        txtContent += `Entry ${index + 1}:\n`;
-        txtContent += `- Lambda Value: ${entry.afrValue}\n`;
-        txtContent += `- Temperature: ${entry.temperature}\n`;
-        txtContent += `- Voltage: ${entry.voltage}\n`;
-        txtContent += `- Engine RPM: ${entry.rpm}\n`;
-        txtContent += `- Throttle Position: ${entry.throttle}%\n`;
-        txtContent += `- Timestamp: ${entry.timestamp}\n\n`;
-    });
+    // JSON-Inhalt vorbereiten
+    const jsonContent = JSON.stringify(storedData, null, 2);
 
-    // Neuen Tab öffnen und Inhalt anzeigen
+    // Neuen Tab öffnen und JSON anzeigen
     const newWindow = window.open('', '_blank');
     if (newWindow) {
-        newWindow.document.write('<pre>' + txtContent + '</pre>');
+        newWindow.document.write('<pre>' + jsonContent + '</pre>');
         newWindow.document.close();
     } else {
         alert('Unable to open a new tab. Please check your browser settings.');
