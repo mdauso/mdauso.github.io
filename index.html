@@ -149,14 +149,7 @@
             }
         }
 
-        function updateValues(afrValue, temperature, voltage, rpm, throttle) {
-            document.getElementById('lambdaValue').textContent = afrValue.toFixed(2);
-            document.getElementById('tempValue').textContent = temperature.toString();
-            document.getElementById('voltageValue').textContent = voltage.toFixed(1);
-            document.getElementById('rpmValue').textContent = rpm.toString();
-            document.getElementById('throttleValue').textContent = throttle.toFixed(1);
-        }
-
+        
          function updateValues(afrValue, temperature, voltage, rpm, throttle) {
             document.getElementById('lambdaValue').textContent = afrValue.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
