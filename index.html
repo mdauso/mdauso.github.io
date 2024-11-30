@@ -158,17 +158,37 @@
         }
 
         function saveData(afrValue, temperature, voltage, rpm, throttle) {
-            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            storedData.push({
-                afrValue: afrValue.toFixed(2),
-                temperature: temperature,
+            const existingData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            const newData = { 
+                afrValue: afrValue.toFixed(2), 
+                temperature: temperature, 
                 voltage: voltage.toFixed(1),
                 rpm: rpm,
                 throttle: throttle.toFixed(1),
                 timestamp: new Date().toISOString()
-            });
-            localStorage.setItem('sensorData', JSON.stringify(storedData));
+            };
+            existingData.push(newData);
+            localStorage.setItem('sensorData', JSON.stringify(existingData));
         }
+
+        document.getElementById('viewStoredData').addEventListener('click', () => {
+            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            if (storedData.length === 0) {
+                alert('No data stored yet!');
+                return;
+            }
+            let output = 'Stored Data:\n\n';
+            storedData.forEach((entry, index) => {
+                output += `Entry ${index + 1}:\n`;
+                output += `- Lambda Value: ${entry.afrValue}\n`;
+                output += `- Temperature: ${entry.temperature}\n`;
+                output += `- Voltage: ${entry.voltage}\n`;
+                output += `- Engine RPM: ${entry.rpm}\n`;
+                output += `- Throttle Position: ${entry.throttle}%\n`;
+                output += `- Timestamp: ${entry.timestamp}\n\n`;
+            });
+            alert(output);
+        });
 
         document.getElementById('exportData').addEventListener('click', () => {
             const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
@@ -176,15 +196,22 @@
                 alert('No data available to export!');
                 return;
             }
+            let txtContent = 'Stored Sensor Data:\n\n';
+            storedData.forEach((entry, index) => {
+                txtContent += `Entry ${index + 1}:\n`;
+                txtContent += `- Lambda Value: ${entry.afrValue}\n`;
+                txtContent += `- Temperature: ${entry.temperature}\n`;
+                txtContent += `- Voltage: ${entry.voltage}\n`;
+                txtContent += `- Engine RPM: ${entry.rpm}\n`;
+                txtContent += `- Throttle Position: ${entry.throttle}%\n`;
+                txtContent += `- Timestamp: ${entry.timestamp}\n\n`;
+            });
 
-            const jsonContent = JSON.stringify(storedData, null, 2);
-            const newWindow = window.open('', '_blank');
-            if (newWindow) {
-                newWindow.document.write('<pre>' + jsonContent + '</pre>');
-                newWindow.document.close();
-            } else {
-                alert('Unable to open a new tab. Please check your browser settings.');
-            }
+            const blob = new Blob([txtContent], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'sensor_data.txt';
+            link.click();
         });
     </script>
 </body>
