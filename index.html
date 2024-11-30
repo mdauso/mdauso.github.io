@@ -157,7 +157,7 @@
             document.getElementById('throttleValue').textContent = throttle.toFixed(1);
         }
 
-       function saveData(afrValue, temperature, voltage, rpm, throttle) {
+        function saveData(afrValue, temperature, voltage, rpm, throttle) {
             const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
             storedData.push({
                 afrValue: afrValue.toFixed(2),
