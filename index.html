@@ -203,25 +203,15 @@
         return;
     }
 
-    // Erstelle CSV-Inhalt
     let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
     storedData.forEach(entry => {
         csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
     });
 
-    // Blob erzeugen
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-
-    // Download-Link erstellen
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'sensor_data.csv';
-
-    // Speziell für iOS: Link in den DOM einfügen
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link); // Entfernen des Links aus dem DOM
+    // CSV-Daten im neuen Tab anzeigen
+    const newTab = window.open();
+    newTab.document.write('<pre>' + csvContent + '</pre>');
+    newTab.document.close();
 });
     </script>
 </body>
