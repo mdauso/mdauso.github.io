@@ -48,6 +48,25 @@
     <button id="viewStoredData">View Stored Data</button>
     <button id="exportData">Export Data as CSV</button>
 
+    <!-- Tabelle zur Datenanzeige -->
+    <div id="dataTable" style="margin-top: 20px; display: none;">
+        <h2>Stored Data</h2>
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Lambda Value</th>
+                    <th>Temperature</th>
+                    <th>Voltage</th>
+                    <th>Engine RPM</th>
+                    <th>Throttle Position</th>
+                </tr>
+            </thead>
+            <tbody id="dataTableBody">
+            </tbody>
+        </table>
+    </div>
+
     <script>
         let device;
         let serialCharacteristic;
@@ -111,11 +130,11 @@
             const afrValue = afrCode / 147;
             const temperature = getTemperature(tempCode);
             const voltage = voltageCode / 10.0;
-            const rpm = rpmCode * 50; // Beispielskalierung für RPM
-            const throttle = throttleCode * 0.4; // Beispielskalierung für Drosselklappenstellung
+            const rpm = rpmCode * 50;
+            const throttle = throttleCode * 0.4;
 
             updateValues(afrValue, temperature, voltage, rpm, throttle);
-            saveData(afrValue, temperature, voltage, rpm, throttle); // Speichert die Werte
+            saveData(afrValue, temperature, voltage, rpm, throttle);
         }
 
         function getTemperature(index) {
@@ -151,16 +170,30 @@
 
         document.getElementById('viewStoredData').addEventListener('click', () => {
             const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            const dataTable = document.getElementById('dataTable');
+            const tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = '';
+
             if (storedData.length === 0) {
                 alert('No data stored yet!');
+                dataTable.style.display = 'none';
                 return;
             }
-            let output = 'Stored Data (CSV Format):\n\n';
-            output += 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
+
             storedData.forEach(entry => {
-                output += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.timestamp}</td>
+                    <td>${entry.afrValue}</td>
+                    <td>${entry.temperature}</td>
+                    <td>${entry.voltage}</td>
+                    <td>${entry.rpm}</td>
+                    <td>${entry.throttle}</td>
+                `;
+                tableBody.appendChild(row);
             });
-            alert(output);
+
+            dataTable.style.display = 'block';
         });
 
         document.getElementById('exportData').addEventListener('click', () => {
@@ -176,11 +209,5 @@
             });
 
             const blob = new Blob([csvContent], { type: 'text/csv' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'sensor_data.csv';
-            link.click();
-        });
-    </script>
-</body>
-</html>
+            const link = document
+
