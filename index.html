@@ -197,23 +197,32 @@
         });
 
         document.getElementById('exportData').addEventListener('click', () => {
-            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            if (storedData.length === 0) {
-                alert('No data available to export!');
-                return;
-            }
+    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+    if (storedData.length === 0) {
+        alert('No data available to export!');
+        return;
+    }
 
-            let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
-            storedData.forEach(entry => {
-                csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
-            });
+    // Erstelle CSV-Inhalt
+    let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
+    storedData.forEach(entry => {
+        csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
+    });
 
-                  const blob = new Blob([csvContent], { type: 'text/csv' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'sensor_data.csv';
-            link.click();
-        });
+    // Blob erzeugen
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+
+    // Download-Link erstellen
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'sensor_data.csv';
+
+    // Speziell für iOS: Link in den DOM einfügen
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link); // Entfernen des Links aus dem DOM
+});
     </script>
 </body>
 </html>
