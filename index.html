@@ -208,6 +208,13 @@
                 csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
             });
 
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const link = document
+                  const blob = new Blob([csvContent], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'sensor_data.csv';
+            link.click();
+        });
+    </script>
+</body>
+</html>
 
