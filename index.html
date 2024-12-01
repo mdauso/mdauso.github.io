@@ -189,10 +189,25 @@
         txtContent += `- Timestamp: ${entry.timestamp}\n\n`;
     });
 
-    // Zeigt den Inhalt im Browser an
+    document.getElementById('exportData').addEventListener('click', () => {
+    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+    if (storedData.length === 0) {
+        alert('No data available to export!');
+        return;
+    }
+
+    // CSV-Header
+    let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
+
+    // Daten hinzufügen
+    storedData.forEach(entry => {
+        csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
+    });
+
+    // CSV-Daten im Browser anzeigen
     const outputDiv = document.createElement('div');
     outputDiv.style.whiteSpace = 'pre-wrap';
-    outputDiv.textContent = txtContent;
+    outputDiv.textContent = csvContent;
     document.body.appendChild(outputDiv);
 });
 
