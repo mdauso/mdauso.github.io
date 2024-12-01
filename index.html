@@ -44,12 +44,9 @@
         <div class="value-label"> </div>
     </div>
 
-    <!-- Button zum Wechseln zur Graph-Seite -->
-    <button onclick="window.location.href='Information.html'">More Info</button>
-
     <!-- Buttons für gespeicherte Daten -->
     <button id="viewStoredData">View Stored Data</button>
-    <button id="exportData">Export Data as TXT</button>
+    <button id="exportData">Export Data as CSV</button>
 
     <script>
         let device;
@@ -141,12 +138,12 @@
         function saveData(afrValue, temperature, voltage, rpm, throttle) {
             const existingData = JSON.parse(localStorage.getItem('sensorData')) || [];
             const newData = { 
+                timestamp: new Date().toISOString(),
                 afrValue: afrValue.toFixed(2), 
                 temperature: temperature, 
                 voltage: voltage.toFixed(1),
                 rpm: rpm,
-                throttle: throttle.toFixed(1),
-                timestamp: new Date().toISOString()
+                throttle: throttle.toFixed(1)
             };
             existingData.push(newData);
             localStorage.setItem('sensorData', JSON.stringify(existingData));
@@ -158,61 +155,32 @@
                 alert('No data stored yet!');
                 return;
             }
-            let output = 'Stored Data:\n\n';
-            storedData.forEach((entry, index) => {
-                output += `Entry ${index + 1}:\n`;
-                output += `- Lambda Value: ${entry.afrValue}\n`;
-                output += `- Temperature: ${entry.temperature}\n`;
-                output += `- Voltage: ${entry.voltage}\n`;
-                output += `- Engine RPM: ${entry.rpm}\n`;
-                output += `- Throttle Position: ${entry.throttle}%\n`;
-                output += `- Timestamp: ${entry.timestamp}\n\n`;
+            let output = 'Stored Data (CSV Format):\n\n';
+            output += 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
+            storedData.forEach(entry => {
+                output += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
             });
             alert(output);
         });
 
         document.getElementById('exportData').addEventListener('click', () => {
-    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-    if (storedData.length === 0) {
-        alert('No data available to export!');
-        return;
-    }
+            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            if (storedData.length === 0) {
+                alert('No data available to export!');
+                return;
+            }
 
-    let txtContent = 'Stored Sensor Data:\n\n';
-    storedData.forEach((entry, index) => {
-        txtContent += `Entry ${index + 1}:\n`;
-        txtContent += `- Lambda Value: ${entry.afrValue}\n`;
-        txtContent += `- Temperature: ${entry.temperature}\n`;
-        txtContent += `- Voltage: ${entry.voltage}\n`;
-        txtContent += `- Engine RPM: ${entry.rpm}\n`;
-        txtContent += `- Throttle Position: ${entry.throttle}%\n`;
-        txtContent += `- Timestamp: ${entry.timestamp}\n\n`;
-    });
+            let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
+            storedData.forEach(entry => {
+                csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
+            });
 
-    document.getElementById('exportData').addEventListener('click', () => {
-    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-    if (storedData.length === 0) {
-        alert('No data available to export!');
-        return;
-    }
-
-    // CSV-Header
-    let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
-
-    // Daten hinzufügen
-    storedData.forEach(entry => {
-        csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
-    });
-
-    // CSV-Daten im Browser anzeigen
-    const outputDiv = document.createElement('div');
-    outputDiv.style.whiteSpace = 'pre-wrap';
-    outputDiv.textContent = csvContent;
-    document.body.appendChild(outputDiv);
-});
-
-       
-
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'sensor_data.csv';
+            link.click();
+        });
     </script>
 </body>
 </html>
