@@ -172,28 +172,29 @@
         });
 
         document.getElementById('exportData').addEventListener('click', () => {
-            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            if (storedData.length === 0) {
-                alert('No data available to export!');
-                return;
-            }
-            let txtContent = 'Stored Sensor Data:\n\n';
-            storedData.forEach((entry, index) => {
-                txtContent += `Entry ${index + 1}:\n`;
-                txtContent += `- Lambda Value: ${entry.afrValue}\n`;
-                txtContent += `- Temperature: ${entry.temperature}\n`;
-                txtContent += `- Voltage: ${entry.voltage}\n`;
-                txtContent += `- Engine RPM: ${entry.rpm}\n`;
-                txtContent += `- Throttle Position: ${entry.throttle}%\n`;
-                txtContent += `- Timestamp: ${entry.timestamp}\n\n`;
-            });
+    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+    if (storedData.length === 0) {
+        alert('No data available to export!');
+        return;
+    }
 
-            const blob = new Blob([txtContent], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'sensor_data.txt';
-            link.click();
-        });
+    let txtContent = 'Stored Sensor Data:\n\n';
+    storedData.forEach((entry, index) => {
+        txtContent += `Entry ${index + 1}:\n`;
+        txtContent += `- Lambda Value: ${entry.afrValue}\n`;
+        txtContent += `- Temperature: ${entry.temperature}\n`;
+        txtContent += `- Voltage: ${entry.voltage}\n`;
+        txtContent += `- Engine RPM: ${entry.rpm}\n`;
+        txtContent += `- Throttle Position: ${entry.throttle}%\n`;
+        txtContent += `- Timestamp: ${entry.timestamp}\n\n`;
+    });
+
+    // Zeigt den Inhalt im Browser an
+    const outputDiv = document.createElement('div');
+    outputDiv.style.whiteSpace = 'pre-wrap';
+    outputDiv.textContent = txtContent;
+    document.body.appendChild(outputDiv);
+});
 
        
 
