@@ -204,18 +204,31 @@
             dataTable.style.display = 'block';
         });
 
-       document.getElementById('selectAllBtn').addEventListener('click', () => {
+      document.getElementById('selectAllBtn').addEventListener('click', () => {
     const table = document.getElementById('dataTable');
     const range = document.createRange();
     const selection = window.getSelection();
-
+    
     // Markiert die gesamte Tabelle
     range.selectNodeContents(table);
     selection.removeAllRanges();
     selection.addRange(range);
 
-    // Kopiert die markierte Tabelle in die Zwischenablage
+    // Ersetze Punkte durch Kommas in der Tabelle
+    const tableHTML = table.innerHTML.replace(/(\d)\.(\d)/g, '$1,$2');
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = tableHTML;
+    const tempTable = tempDiv.querySelector('table');
+
+    // Kopiert die geänderte Tabelle in die Zwischenablage
     try {
+        const rangeForCopy = document.createRange();
+        const selectionForCopy = window.getSelection();
+        
+        rangeForCopy.selectNodeContents(tempTable);
+        selectionForCopy.removeAllRanges();
+        selectionForCopy.addRange(rangeForCopy);
+
         document.execCommand('copy');
         alert('Table copied to clipboard! You can now paste it into Excel.');
     } catch (err) {
@@ -223,6 +236,7 @@
         alert('Failed to copy table!');
     }
 });
+
     </script>
 </body>
 </html>
