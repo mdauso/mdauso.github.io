@@ -15,59 +15,56 @@
     
     <button id="connectBtn">Connect to Device</button>
 
-    <div class="data-container center-value-container" style="text-align: center; padding: 5px 0;">
-    <div class="value-label">Lambda Value:</div>
-    <div id="lambdaValue" class="lambda-value">--</div>
-</div>
-
-     <div class="spacer1">
-        <div class="value-label"> </div>
-    </div>
-  
-
-<div class="data-container small-value-container" style="display: flex; justify-content: space-between; padding: 3px 0; margin: 0;">
-    <div class="value-label">Sensor Temperature (°C):</div>
-    <div id="tempValue" class="small-value">--</div>
-</div>
-
-<div class="data-container small-value-container" style="display: flex; justify-content: space-between; padding: 3px 0; margin: 0;">
-    <div class="value-label">Engine RPM (1/min):</div>
-    <div id="rpmValue" class="small-value">--</div>
-</div>
-
-<div class="data-container small-value-container" style="display: flex; justify-content: space-between; padding: 3px 0; margin: 0;">
-    <div class="value-label">Throttle Position (%):</div>
-    <div id="throttleValue" class="small-value">--</div>
-</div>
-
-<div class="data-container small-value-container" style="display: flex; justify-content: space-between; padding: 3px 0; margin: 0;">
-    <div class="value-label">Voltage (V):</div>
-    <div id="voltageValue" class="small-value">--</div>
-</div>
-
-    <div class="spacer1">
-        <div class="value-label"> </div>
-    </div>
-  
-
-    <!-- Buttons für gespeicherte Daten -->
-    <button id="viewStoredData">View Stored Data</button>
-
-     <div class="spacer">
-        <div class="value-label"> </div>
-    </div>
-    
-    <button id="exportData">Export Data as TXT</button>
-
-     <div class="spacer">
-        <div class="value-label"> </div>
+    <div class="data-container">
+        <div class="value-label">Lambda Value:</div>
+        <div id="lambdaValue" class="lambda-value">--</div>
     </div>
 
-     <!-- Button zum Wechseln zur Graph-Seite -->
-    <button onclick="window.location.href='Information.html'">More Info</button>
+    <div class="data-container small-value-container">
+        <div class="value-label">Sensor Temperature (°C):</div>
+        <div id="tempValue" class="small-value">--</div>
+    </div>
+
+    <div class="data-container small-value-container">
+        <div class="value-label">Engine RPM (1/min):</div>
+        <div id="rpmValue" class="small-value">--</div>
+    </div>
+
+    <div class="data-container small-value-container">
+        <div class="value-label">Throttle Position (%):</div>
+        <div id="throttleValue" class="small-value">--</div>
+    </div>
+
+    <div class="data-container small-value-container">
+        <div class="value-label">Voltage (V):</div>
+        <div id="voltageValue" class="small-value">--</div>
+    </div>
 
     <div class="spacer">
         <div class="value-label"> </div>
+    </div>
+
+    <!-- Buttons für gespeicherte Daten -->
+    <button id="viewStoredData">View Stored Data</button>
+    <button id="exportData">Export Data as CSV</button>
+
+    <!-- Tabelle zur Datenanzeige -->
+    <div id="dataTable" style="margin-top: 20px; display: none;">
+        <h2>Stored Data</h2>
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Lambda</th>
+                    <th>Temp</th>
+                    <th>Volt</th>
+                    <th>RPM</th>
+                    <th>Throttle</th>
+                </tr>
+            </thead>
+            <tbody id="dataTableBody">
+            </tbody>
+        </table>
     </div>
 
     <script>
@@ -133,11 +130,11 @@
             const afrValue = afrCode / 147;
             const temperature = getTemperature(tempCode);
             const voltage = voltageCode / 10.0;
-            const rpm = rpmCode * 33; // Skalierung für RPM
-            const throttle = throttleCode; // Skalierung für Drosselklappenstellung
+            const rpm = rpmCode * 50;
+            const throttle = throttleCode * 0.4;
 
             updateValues(afrValue, temperature, voltage, rpm, throttle);
-            saveData(afrValue, temperature, voltage, rpm, throttle); // Speichert die Werte
+            saveData(afrValue, temperature, voltage, rpm, throttle);
         }
 
         function getTemperature(index) {
@@ -149,8 +146,7 @@
             }
         }
 
-        
-         function updateValues(afrValue, temperature, voltage, rpm, throttle) {
+        function updateValues(afrValue, temperature, voltage, rpm, throttle) {
             document.getElementById('lambdaValue').textContent = afrValue.toFixed(2);
             document.getElementById('tempValue').textContent = temperature.toString();
             document.getElementById('voltageValue').textContent = voltage.toFixed(1);
@@ -159,40 +155,65 @@
         }
 
         function saveData(afrValue, temperature, voltage, rpm, throttle) {
-            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            storedData.push({
-                afrValue: afrValue.toFixed(2),
-                temperature: temperature,
+            const existingData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            const newData = { 
+                timestamp: new Date().toISOString(),
+                afrValue: afrValue.toFixed(2), 
+                temperature: temperature, 
                 voltage: voltage.toFixed(1),
                 rpm: rpm,
-                throttle: throttle.toFixed(1),
-                timestamp: new Date().toISOString()
-            });
-            localStorage.setItem('sensorData', JSON.stringify(storedData));
+                throttle: throttle.toFixed(1)
+            };
+            existingData.push(newData);
+            localStorage.setItem('sensorData', JSON.stringify(existingData));
         }
 
+        document.getElementById('viewStoredData').addEventListener('click', () => {
+            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            const dataTable = document.getElementById('dataTable');
+            const tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = '';
+
+            if (storedData.length === 0) {
+                alert('No data stored yet!');
+                dataTable.style.display = 'none';
+                return;
+            }
+
+            storedData.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.timestamp}</td>
+                    <td>${entry.afrValue}</td>
+                    <td>${entry.temperature}</td>
+                    <td>${entry.voltage}</td>
+                    <td>${entry.rpm}</td>
+                    <td>${entry.throttle}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            dataTable.style.display = 'block';
+        });
+
         document.getElementById('exportData').addEventListener('click', () => {
-    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-    if (storedData.length === 0) {
-        alert('No data available to export!');
-        return;
-    }
+            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            if (storedData.length === 0) {
+                alert('No data available to export!');
+                return;
+            }
 
-    // JSON-Inhalt vorbereiten
-    const jsonContent = JSON.stringify(storedData, null, 2);
+            let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
+            storedData.forEach(entry => {
+                csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
+            });
 
-    // Blob erstellen und Download-Link erzeugen
-    const blob = new Blob([jsonContent], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'sensor_data.json';
-
-    // Simuliere einen Klick auf den Link, um den Download zu starten
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link); // Link entfernen
-});
-
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'sensor_data.csv';
+            link.click();
+        });
     </script>
 </body>
 </html>
