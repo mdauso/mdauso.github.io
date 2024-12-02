@@ -204,8 +204,9 @@
     dataTable.style.display = 'block';
 });
 
-        document.getElementById("selectAllBtn").addEventListener("click", () => {
-    const table = document.querySelector("#dataTable table"); // Tabelle mit ihren Inhalten
+       document.getElementById("selectAllBtn").addEventListener("click", () => {
+    const table = document.querySelector("#dataTable table"); // Tabelle finden
+
     if (!table) {
         alert("No data available to select!");
         return;
@@ -213,13 +214,21 @@
 
     // Erstellen eines Range-Objekts zur Markierung des Textes
     const range = document.createRange();
-    range.selectNodeContents(table); // Der gesamte Inhalt der Tabelle wird ausgewählt
-
-    // Auswahl im aktuellen Fenster durchführen
     const selection = window.getSelection();
-    selection.removeAllRanges(); // Alte Markierungen entfernen
-    selection.addRange(range);   // Neue Markierung setzen
+
+    // Entfernt vorherige Markierungen (falls vorhanden)
+    selection.removeAllRanges();
+
+    try {
+        range.selectNodeContents(table); // Inhalt der Tabelle markieren
+        selection.addRange(range);      // Markierung setzen
+    } catch (error) {
+        console.error("Selection failed:", error);
+        alert("Could not select the table contents.");
+    }
 });
+
+        
     </script>
 </body>
 </html>
