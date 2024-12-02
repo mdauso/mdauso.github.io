@@ -53,7 +53,7 @@
 
     <!-- Buttons für gespeicherte Daten -->
     <button id="viewStoredData">View Stored Data</button>
-    <button id="exportData">Select All Table Data</button>
+    <button id="exportData">Export Data</button>
 
 
     <!-- Tabelle zur Datenanzeige -->
@@ -204,7 +204,7 @@
             dataTable.style.display = 'block';
         });
 
-      ddocument.getElementById('exportData').addEventListener('click', () => {
+      document.getElementById('exportData').addEventListener('click', () => {
     const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
     if (storedData.length === 0) {
         alert('No data available to export!');
