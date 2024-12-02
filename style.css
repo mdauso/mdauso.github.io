@@ -94,7 +94,7 @@ body {
             border: none; 
             border-radius: 5px; 
             cursor: pointer; 
-            margin-bottom: 30px; /* Abstand unter dem Button erhöhen */
+            margin-bottom: 10px; /* Abstand unter dem Button erhöhen */
        }
 
          #viewStoredData:hover {
@@ -110,7 +110,7 @@ body {
             border: none; 
             border-radius: 5px; 
             cursor: pointer; 
-            margin-bottom: 30px; /* Abstand unter dem Button erhöhen */
+            margin-bottom: 10px; /* Abstand unter dem Button erhöhen */
        }
 
          #selectAllBtn:hover {
