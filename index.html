@@ -204,46 +204,25 @@
     dataTable.style.display = 'block';
 });
 
-
-
-        
-
-   document.getElementById("selectAllBtn").addEventListener("click", () => {
-    const table = document.querySelector("#dataTable table");
-
-    if (!table) {
-        alert("No data available to select!");
-        return;
-    }
-
+        document.getElementById('selectAllBtn').addEventListener('click', () => {
+    const table = document.getElementById('dataTable');
     const range = document.createRange();
     const selection = window.getSelection();
 
-    // Entferne vorherige Markierungen
+    // Markiert die gesamte Tabelle
+    range.selectNodeContents(table);
     selection.removeAllRanges();
+    selection.addRange(range);
 
-    // Versuche explizit den Fokus zu setzen, bevor die Auswahl erfolgt
+    // Kopiert die markierte Tabelle in die Zwischenablage
     try {
-        table.focus(); // Erzwinge Fokus (hilfreich bei komplexen DOM-Strukturen)
-    } catch {
-        console.log("Table cannot be focused, continuing...");
-    }
-
-    // Wähle den Inhalt der Tabelle
-    try {
-        range.selectNodeContents(table);
-        selection.addRange(range);
-
-        console.log("Table content selected successfully.");
-    } catch (error) {
-        console.error("Error selecting table content:", error);
+        document.execCommand('copy');
+        alert('Table copied to clipboard! You can now paste it into Excel.');
+    } catch (err) {
+        console.error('Error copying table: ', err);
+        alert('Failed to copy table!');
     }
 });
-
-
-
-
-        
     </script>
 </body>
 </html>
