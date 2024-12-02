@@ -73,6 +73,7 @@
             18, 18, 17, 16, 15, 14, 13, 12, 11, 11, 10, 9, 8, 7, 6, 5, 5, 4, 3, 2, 1, 1, 0
         ];
 
+        // Verbinden mit Gerät
         document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
                 device = await navigator.bluetooth.requestDevice({
@@ -89,6 +90,7 @@
             }
         });
 
+        // Verarbeitung empfangener Daten
         function handleSerialData(event) {
             const data = new Uint8Array(event.target.value.buffer);
             for (let byte of data) {
@@ -113,6 +115,7 @@
             saveData(afrValue, temperature, voltage, rpm, throttle);
         }
 
+        // Anzeige der aktuellen Werte
         function updateValues(afr, temp, volt, rpm, throttle) {
             document.getElementById('lambdaValue').textContent = afr.toFixed(2).replace('.', ',');
             document.getElementById('tempValue').textContent = temp;
@@ -121,18 +124,24 @@
             document.getElementById('throttleValue').textContent = throttle.toFixed(1).replace('.', ',');
         }
 
+        // Daten speichern
         function saveData(afr, temp, volt, rpm, throttle) {
             const data = JSON.parse(localStorage.getItem('sensorData')) || [];
             data.push({ time: new Date().toISOString(), afr, temp, volt, rpm, throttle });
             localStorage.setItem('sensorData', JSON.stringify(data));
         }
 
+        // Gespeicherte Daten anzeigen
         document.getElementById('viewStoredData').addEventListener('click', () => {
             const data = JSON.parse(localStorage.getItem('sensorData')) || [];
             const tbody = document.getElementById('dataTableBody');
             tbody.innerHTML = '';
 
-            if (data.length === 0) return alert('No data available!');
+            if (data.length === 0) {
+                alert('No data available!');
+                document.getElementById('dataTable').style.display = 'none';
+                return;
+            }
 
             data.forEach(entry => {
                 const row = document.createElement('tr');
@@ -148,6 +157,7 @@
             document.getElementById('dataTable').style.display = 'block';
         });
 
+        // Tabelle markieren
         document.getElementById('selectAllBtn').addEventListener('click', () => {
             const range = document.createRange();
             const table = document.querySelector('#dataTable table');
