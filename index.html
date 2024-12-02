@@ -204,24 +204,21 @@
     dataTable.style.display = 'block';
 });
 
-        document.getElementById('selectAllBtn').addEventListener('click', () => {
-    const table = document.getElementById('dataTable');
-    const range = document.createRange();
-    const selection = window.getSelection();
-
-    // Markiert die gesamte Tabelle
-    range.selectNodeContents(table);
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    // Kopiert die markierte Tabelle in die Zwischenablage
-    try {
-        document.execCommand('copy');
-        alert('Table copied to clipboard! You can now paste it into Excel.');
-    } catch (err) {
-        console.error('Error copying table: ', err);
-        alert('Failed to copy table!');
+        document.getElementById("selectAllBtn").addEventListener("click", () => {
+    const table = document.querySelector("#dataTable table"); // Tabelle mit ihren Inhalten
+    if (!table) {
+        alert("No data available to select!");
+        return;
     }
+
+    // Erstellen eines Range-Objekts zur Markierung des Textes
+    const range = document.createRange();
+    range.selectNodeContents(table); // Der gesamte Inhalt der Tabelle wird ausgewählt
+
+    // Auswahl im aktuellen Fenster durchführen
+    const selection = window.getSelection();
+    selection.removeAllRanges(); // Alte Markierungen entfernen
+    selection.addRange(range);   // Neue Markierung setzen
 });
     </script>
 </body>
