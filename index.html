@@ -204,7 +204,7 @@
         tableBody.appendChild(row);
     });
 
-     document.getElementById('selectAllBtn').addEventListener('click', () => {
+    document.getElementById('selectAllBtn').addEventListener('click', () => {
     const table = document.getElementById('dataTable');
     const range = document.createRange();
     const selection = window.getSelection();
@@ -223,6 +223,7 @@
         alert('Failed to copy table!');
     }
 });
+
 
     </script>
 </body>
