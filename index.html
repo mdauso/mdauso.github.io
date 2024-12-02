@@ -4,53 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MD Lambda View</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            text-align: center;
-        }
-        .data-container {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-        }
-        .value-label {
-            font-weight: bold;
-        }
-        .lambda-value, .small-value {
-            font-size: 1.2em;
-            margin-left: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: center;
-        }
-        button {
-            margin: 10px 0;
-            padding: 10px 15px;
-            font-size: 1em;
-            cursor: pointer;
-        }
-        #exportData {
-            display: block;
-            margin: 20px auto;
-        }
-    </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
     <h1>MD Lambda View</h1>
 
+    <div class="spacer">
+        <div class="value-label"> </div>
+    </div>
+    
     <button id="connectBtn">Connect to Device</button>
 
     <div class="data-container">
@@ -58,31 +20,45 @@
         <div id="lambdaValue" class="lambda-value">--</div>
     </div>
 
-    <div class="data-container">
+    <div class="data-container small-value-container">
         <div class="value-label">Sensor Temperature (°C):</div>
         <div id="tempValue" class="small-value">--</div>
     </div>
 
-    <div class="data-container">
+    <div class="data-container small-value-container">
         <div class="value-label">Engine RPM (1/min):</div>
         <div id="rpmValue" class="small-value">--</div>
     </div>
 
-    <div class="data-container">
+    <div class="data-container small-value-container">
         <div class="value-label">Throttle Position (%):</div>
         <div id="throttleValue" class="small-value">--</div>
     </div>
 
-    <div class="data-container">
+    <div class="data-container small-value-container">
         <div class="value-label">Voltage (V):</div>
         <div id="voltageValue" class="small-value">--</div>
     </div>
 
+    <div class="spacer">
+        <div class="value-label"> </div>
+    </div>
+
+    <!-- Button zum Wechseln zur Graph-Seite -->
     <button onclick="window.location.href='Information.html'">More Info</button>
 
-    <div id="dataTable">
+     <div class="spacer">
+        <div class="value-label"> </div>
+    </div>
+
+    <!-- Buttons für gespeicherte Daten -->
+    <button id="viewStoredData">View Stored Data</button>
+    <button id="exportData">Export Data as CSV</button>
+
+    <!-- Tabelle zur Datenanzeige -->
+    <div id="dataTable" style="margin-top: 20px; display: none;">
         <h2>Stored Data</h2>
-        <table>
+        <table border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr>
                     <th>Time</th>
@@ -98,13 +74,7 @@
         </table>
     </div>
 
-    <button id="exportData">Export Data as CSV</button>
-
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            displayStoredData(); // Zeige gespeicherte Daten beim Laden der Seite
-        });
-
         let device;
         let serialCharacteristic;
         let buffer = [];
@@ -114,24 +84,24 @@
         const GAP_TIME_MS = 40;
 
         const LSU_4_9_Temperature_Array = [
-            80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61, 60, 59, 58, 56, 55, 54, 52, 51, 50, 49, 48, 46,
-            45, 44, 43, 42, 41, 40, 39, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19,
+            80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61, 60, 59, 58, 56, 55, 54, 52, 51, 50, 49, 48, 46, 
+            45, 44, 43, 42, 41, 40, 39, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 
             18, 18, 17, 16, 15, 14, 13, 12, 11, 11, 10, 9, 8, 7, 6, 5, 5, 4, 3, 2, 1, 1, 0
         ];
 
-        document.getElementById("connectBtn").addEventListener("click", async () => {
+        document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
                 device = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: "MD-Lambda-View" }],
-                    optionalServices: ["FFE0"]
+                    filters: [{ name: 'MD-Lambda-View' }],
+                    optionalServices: ['FFE0']
                 });
                 const server = await device.gatt.connect();
-                const service = await server.getPrimaryService("FFE0");
-                serialCharacteristic = await service.getCharacteristic("FFE1");
+                const service = await server.getPrimaryService('FFE0');
+                serialCharacteristic = await service.getCharacteristic('FFE1');
                 await serialCharacteristic.startNotifications();
-                serialCharacteristic.addEventListener("characteristicvaluechanged", handleSerialData);
+                serialCharacteristic.addEventListener('characteristicvaluechanged', handleSerialData);
             } catch (error) {
-                console.error("Connection failed:", error);
+                console.error('Connection failed:', error);
             }
         });
 
@@ -176,7 +146,7 @@
 
         function getTemperature(index) {
             if (index >= 0 && index < LSU_4_9_Temperature_Array.length) {
-                return LSU_4_9_Temperature_Array[index] + 740;
+                return (LSU_4_9_Temperature_Array[index] + 740);
             } else {
                 console.warn("Temperature index out of range:", index);
                 return 0;
@@ -184,73 +154,72 @@
         }
 
         function updateValues(afrValue, temperature, voltage, rpm, throttle) {
-            document.getElementById("lambdaValue").textContent = afrValue.toFixed(2).replace(".", ",");
-            document.getElementById("tempValue").textContent = temperature.toString();
-            document.getElementById("voltageValue").textContent = voltage.toFixed(1).replace(".", ",");
-            document.getElementById("rpmValue").textContent = rpm.toString();
-            document.getElementById("throttleValue").textContent = throttle.toFixed(1).replace(".", ",");
+            document.getElementById('lambdaValue').textContent = afrValue.toFixed(2);
+            document.getElementById('tempValue').textContent = temperature.toString();
+            document.getElementById('voltageValue').textContent = voltage.toFixed(1);
+            document.getElementById('rpmValue').textContent = rpm.toString();
+            document.getElementById('throttleValue').textContent = throttle.toFixed(1);
         }
 
         function saveData(afrValue, temperature, voltage, rpm, throttle) {
-            const existingData = JSON.parse(localStorage.getItem("sensorData")) || [];
-            const newData = {
+            const existingData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            const newData = { 
                 timestamp: new Date().toISOString(),
-                afrValue: afrValue.toFixed(2).replace(".", ","),
-                temperature: temperature,
-                voltage: voltage.toFixed(1).replace(".", ","),
+                afrValue: afrValue.toFixed(2), 
+                temperature: temperature, 
+                voltage: voltage.toFixed(1),
                 rpm: rpm,
-                throttle: throttle.toFixed(1).replace(".", ",")
+                throttle: throttle.toFixed(1)
             };
             existingData.push(newData);
-            localStorage.setItem("sensorData", JSON.stringify(existingData));
-            displayStoredData();
+            localStorage.setItem('sensorData', JSON.stringify(existingData));
         }
 
-        function displayStoredData() {
-            const storedData = JSON.parse(localStorage.getItem("sensorData")) || [];
-            const tableBody = document.getElementById("dataTableBody");
-            tableBody.innerHTML = "";
+        document.getElementById('viewStoredData').addEventListener('click', () => {
+            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+            const dataTable = document.getElementById('dataTable');
+            const tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = '';
 
             if (storedData.length === 0) {
-                const row = document.createElement("tr");
-                row.innerHTML = `<td colspan="6" style="text-align: center;">No data available</td>`;
-                tableBody.appendChild(row);
+                alert('No data stored yet!');
+                dataTable.style.display = 'none';
                 return;
             }
 
             storedData.forEach(entry => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
+                const row = document.createElement('tr');
+                row.innerHTML = 
                     <td>${entry.timestamp}</td>
                     <td>${entry.afrValue}</td>
                     <td>${entry.temperature}</td>
                     <td>${entry.voltage}</td>
                     <td>${entry.rpm}</td>
                     <td>${entry.throttle}</td>
-                `;
+                ;
                 tableBody.appendChild(row);
             });
-        }
 
-        document.getElementById("exportData").addEventListener("click", () => {
-            const storedData = JSON.parse(localStorage.getItem("sensorData")) || [];
+            dataTable.style.display = 'block';
+        });
+
+        document.getElementById('exportData').addEventListener('click', () => {
+            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
             if (storedData.length === 0) {
-                alert("No data available to export!");
+                alert('No data available to export!');
                 return;
             }
 
-            let csvContent = "Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n";
+            let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
             storedData.forEach(entry => {
-                csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
+                csvContent += ${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n;
             });
 
-            const blob = new Blob([csvContent], { type: "text/csv" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "sensor_data.csv";
-            a.click();
-            URL.revokeObjectURL(url);
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'sensor_data.csv';
+            link.click();
         });
     </script>
 </body>
