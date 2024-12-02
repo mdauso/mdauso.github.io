@@ -178,19 +178,17 @@
             localStorage.setItem('sensorData', JSON.stringify(existingData));
         }
 
+        // Daten anzeigen
         document.getElementById('viewStoredData').addEventListener('click', () => {
-            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            const dataTable = document.getElementById('dataTable');
             const tableBody = document.getElementById('dataTableBody');
-            tableBody.innerHTML = '';
+            tableBody.innerHTML = ''; // Tabelle leeren
 
-            if (storedData.length === 0) {
+            if (exampleData.length === 0) {
                 alert('No data stored yet!');
-                dataTable.style.display = 'none';
                 return;
             }
 
-            storedData.forEach(entry => {
+            exampleData.forEach(entry => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${entry.timestamp}</td>
@@ -203,10 +201,11 @@
                 tableBody.appendChild(row);
             });
 
-            dataTable.style.display = 'block';
+            document.getElementById('dataTable').style.display = 'block';
         });
 
-       document.getElementById('copyTable').addEventListener('click', () => {
+        // Tabelle markieren
+        document.getElementById('copyTable').addEventListener('click', () => {
             const table = document.getElementById('dataTableElement');
             const range = document.createRange();
             const selection = window.getSelection();
