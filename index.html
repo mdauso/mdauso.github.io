@@ -53,7 +53,7 @@
 
     <!-- Buttons für gespeicherte Daten -->
     <button id="viewStoredData">View Stored Data</button>
-    <button id="exportData">Export Data as CSV</button>
+    <button id="copyToClipboard">Copy to Clipboard</button>
 
     <!-- Tabelle zur Datenanzeige -->
     <div id="dataTable" style="margin-top: 20px; display: none;">
@@ -203,24 +203,29 @@
             dataTable.style.display = 'block';
         });
 
-        document.getElementById('exportData').addEventListener('click', () => {
-            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            if (storedData.length === 0) {
-                alert('No data available to export!');
-                return;
-            }
+        document.getElementById('copyToClipboard').addEventListener('click', () => {
+    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+    if (storedData.length === 0) {
+        alert('No data available to copy!');
+        return;
+    }
 
-            let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
-            storedData.forEach(entry => {
-                csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
-            });
+    let tableContent = 'Timestamp\tLambda Value\tTemperature\tVoltage\tEngine RPM\tThrottle Position\n';
+    storedData.forEach(entry => {
+        tableContent += `${entry.timestamp}\t${entry.afrValue}\t${entry.temperature}\t${entry.voltage}\t${entry.rpm}\t${entry.throttle}\n`;
+    });
 
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'sensor_data.csv';
-            link.click();
-        });
+    // Temporäre Textarea erstellen, um den Text zu kopieren
+    const textarea = document.createElement('textarea');
+    textarea.value = tableContent;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+
+    alert('Data copied to clipboard! You can now paste it into Whatever.');
+});
+
     </script>
 </body>
 </html>
