@@ -173,10 +173,6 @@
             localStorage.setItem('sensorData', JSON.stringify(existingData));
         }
 
-// Test-Daten zum Debuggen (entfernen, wenn Gerätedaten kommen)
-        saveData(1.03, 750, 14.8, 3000, 20.5);
-        saveData(1.15, 760, 13.7, 3200, 22.0);
-
         
         document.getElementById('viewStoredData').addEventListener('click', () => {
     const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
