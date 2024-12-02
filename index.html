@@ -206,21 +206,26 @@
 });
 
         document.getElementById("selectAllBtn").addEventListener("click", () => {
-    const table = document.querySelector("#dataTable table"); // Tabelle mit ihren Inhalten
+    const table = document.querySelector("#dataTable table");
     if (!table) {
         alert("No data available to select!");
         return;
     }
 
-    // Erstellen eines Range-Objekts zur Markierung des Textes
-    const range = document.createRange();
-    range.selectNodeContents(table); // Der gesamte Inhalt der Tabelle wird ausgewählt
+    const dataTable = document.getElementById('dataTable');
+    dataTable.style.display = 'block'; // Sicherstellen, dass die Tabelle sichtbar ist
 
-    // Auswahl im aktuellen Fenster durchführen
+    const range = document.createRange();
+    range.selectNodeContents(table);
+
     const selection = window.getSelection();
-    selection.removeAllRanges(); // Alte Markierungen entfernen
-    selection.addRange(range);   // Neue Markierung setzen
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    // Den Fokus explizit auf die Tabelle setzen
+    table.focus();
 });
+
     </script>
 </body>
 </html>
