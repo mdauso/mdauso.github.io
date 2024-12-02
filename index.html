@@ -204,8 +204,11 @@
     dataTable.style.display = 'block';
 });
 
+
+
+        
+
       document.getElementById("selectAllBtn").addEventListener("click", () => {
-    // Ziel: Die Tabelle selbst
     const table = document.querySelector("#dataTable table");
 
     if (!table) {
@@ -213,20 +216,18 @@
         return;
     }
 
-    // Auswahlmechanismus
     const range = document.createRange();
     const selection = window.getSelection();
 
-    try {
-        // Entferne vorherige Markierungen
-        selection.removeAllRanges();
+    // Entferne vorherige Markierungen
+    selection.removeAllRanges();
 
-        // Der Tabelle wird ein Bereich zugewiesen
+    // Versuche den Tabelleninhalt zu markieren
+    try {
         range.selectNodeContents(table);
         selection.addRange(range);
 
-        // Optional: Hinweis, dass die Auswahl erfolgreich war
-        console.log("Table content selected.");
+        console.log("Table content selected successfully.");
     } catch (error) {
         console.error("Error selecting table content:", error);
     }
