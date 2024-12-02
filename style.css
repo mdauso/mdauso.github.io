@@ -83,3 +83,19 @@ body {
             width: 100px; /* Angepasste Breite des Bildes */
             height: auto; /* Höhe automatisch an die Breite anpassen */
         }
+
+
+
+         #copyToClipboard {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #333;
+    background-color: #2196F3;
+    color: white;
+}
+
+#copyToClipboard:hover {
+    background-color: #1e88e5;
+}
