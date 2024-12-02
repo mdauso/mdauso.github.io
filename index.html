@@ -55,7 +55,7 @@
 
     <!-- Tabelle zur Datenanzeige -->
     <div id="dataTable" style="margin-top: 20px; display: none;">
-       <center></center> <h2>Stored-Data</h2></center>
+       <center></center> <h2>Stored_Data</h2></center>
         <table border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr>
@@ -215,16 +215,16 @@
     const dataTable = document.getElementById('dataTable');
     dataTable.style.display = 'block'; // Sicherstellen, dass die Tabelle sichtbar ist
 
-    const range = document.createRange();
-    range.selectNodeContents(table);
+    setTimeout(() => {
+        const range = document.createRange();
+        range.selectNodeContents(table);
 
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    // Den Fokus explizit auf die Tabelle setzen
-    table.focus();
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }, 100); // 100 ms Verzögerung
 });
+
 
     </script>
 </body>
