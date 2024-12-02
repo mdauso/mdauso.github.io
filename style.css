@@ -118,4 +118,17 @@ body {
         }
 
 
-           
+       .styled-button {
+     padding: 10px 20px; 
+            font-size: 12px; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin-bottom: 5px; /* Abstand unter dem Button erhöhen */
+}
+
+.styled-button:hover {
+    background-color: #0056b3; 
+}    
