@@ -211,34 +211,33 @@
    document.getElementById("selectAllBtn").addEventListener("click", () => {
     const table = document.querySelector("#dataTable table");
 
-    if (!table) {
-        alert("No data available to select!");
+    if (!table || table.offsetParent === null) {
+        alert("Table not available or not visible!");
         return;
     }
 
     const range = document.createRange();
     const selection = window.getSelection();
 
-    // Entferne vorherige Markierungen
-    selection.removeAllRanges();
-
-    // Versuche explizit den Fokus zu setzen, bevor die Auswahl erfolgt
-    try {
-        table.focus(); // Erzwinge Fokus (hilfreich bei komplexen DOM-Strukturen)
-    } catch {
-        console.log("Table cannot be focused, continuing...");
+    // Überprüfen, ob Selection verfügbar ist
+    if (!selection) {
+        console.error("Selection object not available!");
+        alert("Could not initialize selection. Please try again.");
+        return;
     }
 
-    // Wähle den Inhalt der Tabelle
+    // Vorherige Markierungen entfernen und neue setzen
     try {
-        range.selectNodeContents(table);
-        selection.addRange(range);
-
-        console.log("Table content selected successfully.");
+        selection.removeAllRanges(); // Alle vorherigen Auswahlbereiche entfernen
+        range.selectNode(table);    // Tabelle als Auswahlbereich festlegen
+        selection.addRange(range); // Auswahlbereich hinzufügen
+        console.log("Table successfully selected!");
     } catch (error) {
-        console.error("Error selecting table content:", error);
+        console.error("Error during selection:", error);
+        alert("An error occurred while selecting the table.");
     }
 });
+
 
 
 
