@@ -215,30 +215,17 @@
     const dataTable = document.getElementById('dataTable');
     dataTable.style.display = 'block'; // Sicherstellen, dass die Tabelle sichtbar ist
 
-    // Dummy-Element erzeugen
-    const dummy = document.createElement("span");
-    dummy.textContent = "dummy";
-    dummy.style.position = "absolute";
-    dummy.style.left = "-9999px"; // Aus dem sichtbaren Bereich schieben
-    document.body.appendChild(dummy);
+    // Reflow erzwingen
+    table.offsetHeight; // Zugriff auf eine Layout-Eigenschaft (z. B. offsetHeight)
 
-    // Dummy markieren und dann Markierung wieder aufheben
+    // Markierung setzen
     const range = document.createRange();
-    range.selectNodeContents(dummy);
+    range.selectNodeContents(table);
     const selection = window.getSelection();
     selection.removeAllRanges();
-    selection.addRange(range); // Markiert das Dummy-Element
-
-    // Danach Markierung auf die Tabelle setzen
-    setTimeout(() => {
-        selection.removeAllRanges(); // Dummy-Markierung aufheben
-        range.selectNodeContents(table); // Tabelle markieren
-        selection.addRange(range);
-
-        // Dummy-Element entfernen
-        document.body.removeChild(dummy);
-    }, 100); // Sofort danach ausführen
+    selection.addRange(range);
 });
+
 
     </script>
 </body>
