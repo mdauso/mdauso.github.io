@@ -204,7 +204,7 @@
     dataTable.style.display = 'block';
 });
 
-       document.getElementById("selectAllBtn").addEventListener("click", () => {
+      document.getElementById("selectAllBtn").addEventListener("click", () => {
     // Ziel: Die Tabelle selbst
     const table = document.querySelector("#dataTable table");
 
@@ -217,12 +217,12 @@
     const range = document.createRange();
     const selection = window.getSelection();
 
-    // Entferne vorherige Markierungen (falls vorhanden)
-    selection.removeAllRanges();
-
     try {
+        // Entferne vorherige Markierungen
+        selection.removeAllRanges();
+
         // Der Tabelle wird ein Bereich zugewiesen
-        range.selectNode(table);
+        range.selectNodeContents(table);
         selection.addRange(range);
 
         // Optional: Hinweis, dass die Auswahl erfolgreich war
@@ -231,6 +231,7 @@
         console.error("Error selecting table content:", error);
     }
 });
+
 
 
         
