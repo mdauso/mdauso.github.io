@@ -88,13 +88,13 @@ body {
 
          #viewStoredData {
             padding: 10px 20px; 
-            font-size: 16px; 
+            font-size: 12px; 
             background-color: #007bff; 
             color: white; 
             border: none; 
             border-radius: 5px; 
             cursor: pointer; 
-            margin-bottom: 10px; /* Abstand unter dem Button erhöhen */
+            margin-bottom: 5px; /* Abstand unter dem Button erhöhen */
        }
 
          #viewStoredData:hover {
@@ -104,13 +104,13 @@ body {
 
          #selectAllBtn {
             padding: 10px 20px; 
-            font-size: 16px; 
+            font-size: 12px; 
             background-color: #007bff; 
             color: white; 
             border: none; 
             border-radius: 5px; 
             cursor: pointer; 
-            margin-bottom: 10px; /* Abstand unter dem Button erhöhen */
+            margin-bottom: 5px; /* Abstand unter dem Button erhöhen */
        }
 
          #selectAllBtn:hover {
