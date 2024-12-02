@@ -206,23 +206,29 @@
         });
 
         document.getElementById('exportData').addEventListener('click', () => {
-    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-    if (storedData.length === 0) {
-        alert('No data available to export!');
-        return;
-    }
+            // CSV-Header
+            let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
 
-    let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
-    storedData.forEach(entry => {
-        csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
-    });
+            // CSV-Daten
+            exampleData.forEach(entry => {
+                csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
+            });
 
-    // Encode CSV data to a data URL
-    const encodedUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+            // Blob erstellen
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            
+            // Download-Link erstellen
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'sensor_data.csv'; // Dateiname für den Download
 
-    // Open the encoded URI in a new tab
-    window.open(encodedUri, '_blank');
-});
+            // Automatischen Klick auslösen
+            link.click();
+
+            // Speicher freigeben
+            URL.revokeObjectURL(url);
+        });
 
     </script>
 </body>
