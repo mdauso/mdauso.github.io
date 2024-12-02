@@ -1,0 +1,151 @@
+document.addEventListener("DOMContentLoaded", () => {
+    displayStoredData(); // Zeige gespeicherte Daten beim Laden der Seite
+});
+
+let device;
+let serialCharacteristic;
+let buffer = [];
+let lastCharTime = 0;
+const CHARS_PER_FRAME = 9;
+const START_CODE = 1;
+const GAP_TIME_MS = 40;
+
+const LSU_4_9_Temperature_Array = [
+    80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61, 60, 59, 58, 56, 55, 54, 52, 51, 50, 49, 48, 46,
+    45, 44, 43, 42, 41, 40, 39, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19,
+    18, 18, 17, 16, 15, 14, 13, 12, 11, 11, 10, 9, 8, 7, 6, 5, 5, 4, 3, 2, 1, 1, 0
+];
+
+document.getElementById("connectBtn").addEventListener("click", async () => {
+    try {
+        device = await navigator.bluetooth.requestDevice({
+            filters: [{ name: "MD-Lambda-View" }],
+            optionalServices: ["FFE0"]
+        });
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService("FFE0");
+        serialCharacteristic = await service.getCharacteristic("FFE1");
+        await serialCharacteristic.startNotifications();
+        serialCharacteristic.addEventListener("characteristicvaluechanged", handleSerialData);
+    } catch (error) {
+        console.error("Connection failed:", error);
+    }
+});
+
+function handleSerialData(event) {
+    const now = Date.now();
+    if (now - lastCharTime > GAP_TIME_MS) {
+        buffer = [];
+    }
+    lastCharTime = now;
+
+    const data = new Uint8Array(event.target.value.buffer);
+    for (let byte of data) {
+        buffer.push(byte);
+        if (buffer.length >= CHARS_PER_FRAME) {
+            processFrame(buffer.slice(0, CHARS_PER_FRAME));
+            buffer = buffer.slice(CHARS_PER_FRAME);
+        }
+    }
+}
+
+function processFrame(data) {
+    if (data[0] !== START_CODE) {
+        console.warn("Invalid start byte:", data[0]);
+        return;
+    }
+
+    const afrCode = data[1];
+    const tempCode = data[2];
+    const voltageCode = data[3];
+    const rpmCode = data[4];
+    const throttleCode = data[5];
+
+    const afrValue = afrCode / 147;
+    const temperature = getTemperature(tempCode);
+    const voltage = voltageCode / 10.0;
+    const rpm = rpmCode * 50;
+    const throttle = throttleCode * 0.4;
+
+    updateValues(afrValue, temperature, voltage, rpm, throttle);
+    saveData(afrValue, temperature, voltage, rpm, throttle);
+}
+
+function getTemperature(index) {
+    if (index >= 0 && index < LSU_4_9_Temperature_Array.length) {
+        return LSU_4_9_Temperature_Array[index] + 740;
+    } else {
+        console.warn("Temperature index out of range:", index);
+        return 0;
+    }
+}
+
+function updateValues(afrValue, temperature, voltage, rpm, throttle) {
+    document.getElementById("lambdaValue").textContent = afrValue.toFixed(2).replace(".", ",");
+    document.getElementById("tempValue").textContent = temperature.toString();
+    document.getElementById("voltageValue").textContent = voltage.toFixed(1).replace(".", ",");
+    document.getElementById("rpmValue").textContent = rpm.toString();
+    document.getElementById("throttleValue").textContent = throttle.toFixed(1).replace(".", ",");
+}
+
+function saveData(afrValue, temperature, voltage, rpm, throttle) {
+    const existingData = JSON.parse(localStorage.getItem("sensorData")) || [];
+    const newData = {
+        timestamp: new Date().toISOString(),
+        afrValue: afrValue.toFixed(2).replace(".", ","),
+        temperature: temperature,
+        voltage: voltage.toFixed(1).replace(".", ","),
+        rpm: rpm,
+        throttle: throttle.toFixed(1).replace(".", ",")
+    };
+    existingData.push(newData);
+    localStorage.setItem("sensorData", JSON.stringify(existingData));
+    displayStoredData();
+}
+
+function displayStoredData() {
+    const storedData = JSON.parse(localStorage.getItem("sensorData")) || [];
+    const tableBody = document.getElementById("dataTableBody");
+    tableBody.innerHTML = "";
+
+    if (storedData.length === 0) {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td colspan="6" style="text-align: center;">No data available</td>`;
+        tableBody.appendChild(row);
+        return;
+    }
+
+    storedData.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${entry.timestamp}</td>
+            <td>${entry.afrValue}</td>
+            <td>${entry.temperature}</td>
+            <td>${entry.voltage}</td>
+            <td>${entry.rpm}</td>
+            <td>${entry.throttle}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+document.getElementById("exportData").addEventListener("click", () => {
+    const storedData = JSON.parse(localStorage.getItem("sensorData")) || [];
+    if (storedData.length === 0) {
+        alert("No data available to export!");
+        return;
+    }
+
+    let csvContent = "Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n";
+    storedData.forEach(entry => {
+        csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "sensor_data.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+});
