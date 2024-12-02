@@ -101,7 +101,7 @@ body {
         }
 
 
-         #viewStoredData {
+         #selectAllBtn {
             padding: 10px 20px;
             margin: 10px;
             font-size: 16px;
@@ -111,6 +111,21 @@ body {
             color: white;
        }
 
-         #viewStoredData:hover {
+         #selectAllBtn:hover {
+         background-color: #1e88e5;
+        }
+
+
+            #selectAllBtn {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #333;
+            background-color: #2196F3;
+            color: white;
+       }
+
+         #selectAllBtn:hover {
          background-color: #1e88e5;
         }
