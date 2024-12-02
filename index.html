@@ -189,14 +189,14 @@
         const row = document.createElement('tr');
         
         // Ersetzen der Punkte durch Kommas, bevor die Werte in die Tabelle eingefügt werden
-        row.innerHTML = `
+        row.innerHTML = 
             <td>${entry.timestamp}</td>
             <td>${entry.afrValue.replace('.', ',')}</td>
             <td>${entry.temperature}</td>
             <td>${entry.voltage.replace('.', ',')}</td>
             <td>${entry.rpm}</td>
             <td>${entry.throttle.replace('.', ',')}</td>
-        `;
+        ;
         
         tableBody.appendChild(row);
     });
@@ -211,33 +211,34 @@
    document.getElementById("selectAllBtn").addEventListener("click", () => {
     const table = document.querySelector("#dataTable table");
 
-    if (!table || table.offsetParent === null) {
-        alert("Table not available or not visible!");
+    if (!table) {
+        alert("No data available to select!");
         return;
     }
 
     const range = document.createRange();
     const selection = window.getSelection();
 
-    // Überprüfen, ob Selection verfügbar ist
-    if (!selection) {
-        console.error("Selection object not available!");
-        alert("Could not initialize selection. Please try again.");
-        return;
+    // Entferne vorherige Markierungen
+    selection.removeAllRanges();
+
+    // Versuche explizit den Fokus zu setzen, bevor die Auswahl erfolgt
+    try {
+        table.focus(); // Erzwinge Fokus (hilfreich bei komplexen DOM-Strukturen)
+    } catch {
+        console.log("Table cannot be focused, continuing...");
     }
 
-    // Vorherige Markierungen entfernen und neue setzen
+    // Wähle den Inhalt der Tabelle
     try {
-        selection.removeAllRanges(); // Alle vorherigen Auswahlbereiche entfernen
-        range.selectNode(table);    // Tabelle als Auswahlbereich festlegen
-        selection.addRange(range); // Auswahlbereich hinzufügen
-        console.log("Table successfully selected!");
+        range.selectNodeContents(table);
+        selection.addRange(range);
+
+        console.log("Table content selected successfully.");
     } catch (error) {
-        console.error("Error during selection:", error);
-        alert("An error occurred while selecting the table.");
+        console.error("Error selecting table content:", error);
     }
 });
-
 
 
 
