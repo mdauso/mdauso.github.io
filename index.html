@@ -217,12 +217,11 @@
         csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
     });
 
-    // Blob erstellen und URL generieren
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
+    // Encode CSV data to a data URL
+    const encodedUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
 
-    // CSV in einem neuen Tab öffnen
-    window.open(url, '_blank');
+    // Open the encoded URI in a new tab
+    window.open(encodedUri, '_blank');
 });
 
     </script>
