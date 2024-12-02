@@ -53,8 +53,7 @@
 
     <!-- Buttons für gespeicherte Daten -->
     <button id="viewStoredData">View Stored Data</button>
-    <button id="selectAllBtn">Copy Data to Clipboard</button>
-
+    <button id="selectAllBtn">Mark all Entries</button>
 
     <!-- Tabelle zur Datenanzeige -->
     <div id="dataTable" style="margin-top: 20px; display: none;">
@@ -204,7 +203,10 @@
         tableBody.appendChild(row);
     });
 
-    document.getElementById('selectAllBtn').addEventListener('click', () => {
+    dataTable.style.display = 'block';
+});
+
+        document.getElementById('selectAllBtn').addEventListener('click', () => {
     const table = document.getElementById('dataTable');
     const range = document.createRange();
     const selection = window.getSelection();
@@ -223,8 +225,6 @@
         alert('Failed to copy table!');
     }
 });
-
-
     </script>
 </body>
 </html>
