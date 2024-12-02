@@ -9,10 +9,6 @@
 <body>
     <h1>MD Lambda View</h1>
 
-    <div class="spacer">
-        <div class="value-label"> </div>
-    </div>
-    
     <button id="connectBtn">Connect to Device</button>
 
     <div class="data-container">
@@ -40,20 +36,12 @@
         <div id="voltageValue" class="small-value">--</div>
     </div>
 
-    <div class="spacer1">
-    <div class="value-label"> </div>
-    </div>
-
-    <!-- Buttons für gespeicherte Daten -->
+    <!-- Buttons -->
     <button id="viewStoredData">View Stored Data</button>
-
     <button id="selectAllBtn">Mark all Entries</button>
+    <button class="styled-button" onclick="window.location.href='Information.html'">More Info</button>
 
-    <!-- Button zum Wechseln zur Graph-Seite mit CSS-Klasse -->
-    <button class="styled-button" onclick="window.location.href='Information.html'">More Info</button> 
-   
-
-    <!-- Tabelle zur Datenanzeige -->
+    <!-- Tabelle -->
     <div id="dataTable" style="margin-top: 20px; display: none;">
         <h2>Stored Data</h2>
         <table border="1" style="width: 100%; border-collapse: collapse;">
@@ -73,17 +61,15 @@
     </div>
 
     <script>
-        let device;
-        let serialCharacteristic;
+        // Datenverarbeitung
+        let device, serialCharacteristic;
         let buffer = [];
-        let lastCharTime = 0;
         const CHARS_PER_FRAME = 9;
         const START_CODE = 1;
-        const GAP_TIME_MS = 40;
 
         const LSU_4_9_Temperature_Array = [
-            80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61, 60, 59, 58, 56, 55, 54, 52, 51, 50, 49, 48, 46, 
-            45, 44, 43, 42, 41, 40, 39, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 
+            80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61, 60, 59, 58, 56, 55, 54, 52, 51, 50, 49, 48, 46,
+            45, 44, 43, 42, 41, 40, 39, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19,
             18, 18, 17, 16, 15, 14, 13, 12, 11, 11, 10, 9, 8, 7, 6, 5, 5, 4, 3, 2, 1, 1, 0
         ];
 
@@ -104,12 +90,6 @@
         });
 
         function handleSerialData(event) {
-            const now = Date.now();
-            if (now - lastCharTime > GAP_TIME_MS) {
-                buffer = [];
-            }
-            lastCharTime = now;
-
             const data = new Uint8Array(event.target.value.buffer);
             for (let byte of data) {
                 buffer.push(byte);
@@ -121,129 +101,64 @@
         }
 
         function processFrame(data) {
-            if (data[0] !== START_CODE) {
-                console.warn("Invalid start byte:", data[0]);
-                return;
-            }
+            if (data[0] !== START_CODE) return;
 
-            const afrCode = data[1];
-            const tempCode = data[2];
-            const voltageCode = data[3];
-            const rpmCode = data[4];
-            const throttleCode = data[5];
-
-            const afrValue = afrCode / 147;
-            const temperature = getTemperature(tempCode);
-            const voltage = voltageCode / 10.0;
-            const rpm = rpmCode * 50;
-            const throttle = throttleCode * 0.4;
+            const afrValue = data[1] / 147;
+            const temperature = LSU_4_9_Temperature_Array[data[2]] + 740;
+            const voltage = data[3] / 10;
+            const rpm = data[4] * 50;
+            const throttle = data[5] * 0.4;
 
             updateValues(afrValue, temperature, voltage, rpm, throttle);
             saveData(afrValue, temperature, voltage, rpm, throttle);
         }
 
-        function getTemperature(index) {
-            if (index >= 0 && index < LSU_4_9_Temperature_Array.length) {
-                return (LSU_4_9_Temperature_Array[index] + 740);
-            } else {
-                console.warn("Temperature index out of range:", index);
-                return 0;
-            }
+        function updateValues(afr, temp, volt, rpm, throttle) {
+            document.getElementById('lambdaValue').textContent = afr.toFixed(2).replace('.', ',');
+            document.getElementById('tempValue').textContent = temp;
+            document.getElementById('voltageValue').textContent = volt.toFixed(1).replace('.', ',');
+            document.getElementById('rpmValue').textContent = rpm;
+            document.getElementById('throttleValue').textContent = throttle.toFixed(1).replace('.', ',');
         }
 
-        function updateValues(afrValue, temperature, voltage, rpm, throttle) {
-            document.getElementById('lambdaValue').textContent = afrValue.toFixed(2);
-            document.getElementById('tempValue').textContent = temperature.toString();
-            document.getElementById('voltageValue').textContent = voltage.toFixed(1);
-            document.getElementById('rpmValue').textContent = rpm.toString();
-            document.getElementById('throttleValue').textContent = throttle.toFixed(1);
-        }
-
-        function saveData(afrValue, temperature, voltage, rpm, throttle) {
-            const existingData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            const newData = { 
-                timestamp: new Date().toISOString(),
-                afrValue: afrValue.toFixed(2), 
-                temperature: temperature, 
-                voltage: voltage.toFixed(1),
-                rpm: rpm,
-                throttle: throttle.toFixed(1)
-            };
-            existingData.push(newData);
-            localStorage.setItem('sensorData', JSON.stringify(existingData));
+        function saveData(afr, temp, volt, rpm, throttle) {
+            const data = JSON.parse(localStorage.getItem('sensorData')) || [];
+            data.push({ time: new Date().toISOString(), afr, temp, volt, rpm, throttle });
+            localStorage.setItem('sensorData', JSON.stringify(data));
         }
 
         document.getElementById('viewStoredData').addEventListener('click', () => {
-    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-    const dataTable = document.getElementById('dataTable');
-    const tableBody = document.getElementById('dataTableBody');
-    tableBody.innerHTML = '';
+            const data = JSON.parse(localStorage.getItem('sensorData')) || [];
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
 
-    if (storedData.length === 0) {
-        alert('No data stored yet!');
-        dataTable.style.display = 'none';
-        return;
-    }
+            if (data.length === 0) return alert('No data available!');
 
-    storedData.forEach(entry => {
-        const row = document.createElement('tr');
-        
-        // Ersetzen der Punkte durch Kommas, bevor die Werte in die Tabelle eingefügt werden
-        row.innerHTML = `
-            <td>${entry.timestamp}</td>
-            <td>${entry.afrValue.replace('.', ',')}</td>
-            <td>${entry.temperature}</td>
-            <td>${entry.voltage.replace('.', ',')}</td>
-            <td>${entry.rpm}</td>
-            <td>${entry.throttle.replace('.', ',')}</td>
-        `;
-        
-        tableBody.appendChild(row);
-    });
+            data.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.time}</td>
+                    <td>${entry.afr.toFixed(2).replace('.', ',')}</td>
+                    <td>${entry.temp}</td>
+                    <td>${entry.volt.toFixed(1).replace('.', ',')}</td>
+                    <td>${entry.rpm}</td>
+                    <td>${entry.throttle.toFixed(1).replace('.', ',')}</td>`;
+                tbody.appendChild(row);
+            });
+            document.getElementById('dataTable').style.display = 'block';
+        });
 
-    dataTable.style.display = 'block';
-});
-
-
-
-        
-
-   document.getElementById("selectAllBtn").addEventListener("click", () => {
-    const table = document.querySelector("#dataTable table");
-
-    if (!table) {
-        alert("No data available to select!");
-        return;
-    }
-
-    const range = document.createRange();
-    const selection = window.getSelection();
-
-    // Entferne vorherige Markierungen
-    selection.removeAllRanges();
-
-    // Versuche explizit den Fokus zu setzen, bevor die Auswahl erfolgt
-    try {
-        table.focus(); // Erzwinge Fokus (hilfreich bei komplexen DOM-Strukturen)
-    } catch {
-        console.log("Table cannot be focused, continuing...");
-    }
-
-    // Wähle den Inhalt der Tabelle
-    try {
-        range.selectNodeContents(table);
-        selection.addRange(range);
-
-        console.log("Table content selected successfully.");
-    } catch (error) {
-        console.error("Error selecting table content:", error);
-    }
-});
-
-
-
-
-        
+        document.getElementById('selectAllBtn').addEventListener('click', () => {
+            const range = document.createRange();
+            const table = document.querySelector('#dataTable table');
+            if (table) {
+                range.selectNodeContents(table);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
     </script>
 </body>
 </html>
+
