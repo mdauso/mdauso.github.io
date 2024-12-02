@@ -40,20 +40,18 @@
         <div id="voltageValue" class="small-value">--</div>
     </div>
 
-    <div class="spacer">
-        <div class="value-label"> </div>
-    </div>
-
-    <!-- Button zum Wechseln zur Graph-Seite -->
-    <button onclick="window.location.href='Information.html'">More Info</button>
-
-     <div class="spacer">
-        <div class="value-label"> </div>
+    <div class="spacer1">
+    <div class="value-label"> </div>
     </div>
 
     <!-- Buttons für gespeicherte Daten -->
     <button id="viewStoredData">View Stored Data</button>
-    <button id="exportData">Export Data as CSV</button>
+
+    <button id="selectAllBtn">Mark all Entries</button>
+
+    <!-- Button zum Wechseln zur Graph-Seite mit CSS-Klasse -->
+    <button class="styled-button" onclick="window.location.href='Information.html'">More Info</button> 
+   
 
     <!-- Tabelle zur Datenanzeige -->
     <div id="dataTable" style="margin-top: 20px; display: none;">
@@ -176,51 +174,76 @@
         }
 
         document.getElementById('viewStoredData').addEventListener('click', () => {
-            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            const dataTable = document.getElementById('dataTable');
-            const tableBody = document.getElementById('dataTableBody');
-            tableBody.innerHTML = '';
+    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
+    const dataTable = document.getElementById('dataTable');
+    const tableBody = document.getElementById('dataTableBody');
+    tableBody.innerHTML = '';
 
-            if (storedData.length === 0) {
-                alert('No data stored yet!');
-                dataTable.style.display = 'none';
-                return;
-            }
+    if (storedData.length === 0) {
+        alert('No data stored yet!');
+        dataTable.style.display = 'none';
+        return;
+    }
 
-            storedData.forEach(entry => {
-                const row = document.createElement('tr');
-                row.innerHTML = 
-                    <td>${entry.timestamp}</td>
-                    <td>${entry.afrValue}</td>
-                    <td>${entry.temperature}</td>
-                    <td>${entry.voltage}</td>
-                    <td>${entry.rpm}</td>
-                    <td>${entry.throttle}</td>
-                ;
-                tableBody.appendChild(row);
-            });
+    storedData.forEach(entry => {
+        const row = document.createElement('tr');
+        
+        // Ersetzen der Punkte durch Kommas, bevor die Werte in die Tabelle eingefügt werden
+        row.innerHTML = `
+            <td>${entry.timestamp}</td>
+            <td>${entry.afrValue.replace('.', ',')}</td>
+            <td>${entry.temperature}</td>
+            <td>${entry.voltage.replace('.', ',')}</td>
+            <td>${entry.rpm}</td>
+            <td>${entry.throttle.replace('.', ',')}</td>
+        `;
+        
+        tableBody.appendChild(row);
+    });
 
-            dataTable.style.display = 'block';
-        });
+    dataTable.style.display = 'block';
+});
 
-        document.getElementById('exportData').addEventListener('click', () => {
-            const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            if (storedData.length === 0) {
-                alert('No data available to export!');
-                return;
-            }
 
-            let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
-            storedData.forEach(entry => {
-                csvContent += ${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n;
-            });
 
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'sensor_data.csv';
-            link.click();
-        });
+        
+
+   document.getElementById("selectAllBtn").addEventListener("click", () => {
+    const table = document.querySelector("#dataTable table");
+
+    if (!table) {
+        alert("No data available to select!");
+        return;
+    }
+
+    const range = document.createRange();
+    const selection = window.getSelection();
+
+    // Entferne vorherige Markierungen
+    selection.removeAllRanges();
+
+    // Versuche explizit den Fokus zu setzen, bevor die Auswahl erfolgt
+    try {
+        table.focus(); // Erzwinge Fokus (hilfreich bei komplexen DOM-Strukturen)
+    } catch {
+        console.log("Table cannot be focused, continuing...");
+    }
+
+    // Wähle den Inhalt der Tabelle
+    try {
+        range.selectNodeContents(table);
+        selection.addRange(range);
+
+        console.log("Table content selected successfully.");
+    } catch (error) {
+        console.error("Error selecting table content:", error);
+    }
+});
+
+
+
+
+        
     </script>
 </body>
 </html>
