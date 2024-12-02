@@ -86,7 +86,7 @@ body {
 
 
 
-         #copyToClipboard {
+         #viewStoredData {
     padding: 10px 20px;
     margin: 10px;
     font-size: 16px;
@@ -96,6 +96,6 @@ body {
     color: white;
 }
 
-#copyToClipboard:hover {
+#viewStoredData:hover {
     background-color: #1e88e5;
 }
