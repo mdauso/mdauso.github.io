@@ -215,16 +215,30 @@
     const dataTable = document.getElementById('dataTable');
     dataTable.style.display = 'block'; // Sicherstellen, dass die Tabelle sichtbar ist
 
+    // Dummy-Element erzeugen
+    const dummy = document.createElement("span");
+    dummy.textContent = "dummy";
+    dummy.style.position = "absolute";
+    dummy.style.left = "-9999px"; // Aus dem sichtbaren Bereich schieben
+    document.body.appendChild(dummy);
+
+    // Dummy markieren und dann Markierung wieder aufheben
+    const range = document.createRange();
+    range.selectNodeContents(dummy);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range); // Markiert das Dummy-Element
+
+    // Danach Markierung auf die Tabelle setzen
     setTimeout(() => {
-        const range = document.createRange();
-        range.selectNodeContents(table);
-
-        const selection = window.getSelection();
-        selection.removeAllRanges();
+        selection.removeAllRanges(); // Dummy-Markierung aufheben
+        range.selectNodeContents(table); // Tabelle markieren
         selection.addRange(range);
-    }, 100); // 100 ms Verzögerung
-});
 
+        // Dummy-Element entfernen
+        document.body.removeChild(dummy);
+    }, 0); // Sofort danach ausführen
+});
 
     </script>
 </body>
