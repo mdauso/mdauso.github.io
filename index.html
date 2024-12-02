@@ -219,6 +219,10 @@
     const range = document.createRange();
     const selection = window.getSelection();
 
+    if (selection == null){
+        alert(":(");
+        return;
+    }
     // Entferne vorherige Markierungen
     selection.removeAllRanges();
 
