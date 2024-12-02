@@ -205,28 +205,33 @@
 });
 
        document.getElementById("selectAllBtn").addEventListener("click", () => {
-    const table = document.querySelector("#dataTable table"); // Tabelle finden
+    // Ziel: Die Tabelle selbst
+    const table = document.querySelector("#dataTable table");
 
     if (!table) {
         alert("No data available to select!");
         return;
     }
 
-    // Erstellen eines Range-Objekts zur Markierung des Textes
+    // Auswahlmechanismus
     const range = document.createRange();
     const selection = window.getSelection();
 
-    // Entfernt vorherige Markierungen (falls vorhanden)
+    // Entferne vorherige Markierungen (falls vorhanden)
     selection.removeAllRanges();
 
     try {
-        range.selectNodeContents(table); // Inhalt der Tabelle markieren
-        selection.addRange(range);      // Markierung setzen
+        // Der Tabelle wird ein Bereich zugewiesen
+        range.selectNode(table);
+        selection.addRange(range);
+
+        // Optional: Hinweis, dass die Auswahl erfolgreich war
+        console.log("Table content selected.");
     } catch (error) {
-        console.error("Selection failed:", error);
-        alert("Could not select the table contents.");
+        console.error("Error selecting table content:", error);
     }
 });
+
 
         
     </script>
