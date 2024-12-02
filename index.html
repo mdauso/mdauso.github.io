@@ -46,7 +46,8 @@
 
     <!-- Buttons für gespeicherte Daten -->
     <button id="viewStoredData">View Stored Data</button>
-    <button id="exportData">Export Data as CSV</button>
+    <!-- Button zum Markieren der Tabelle -->
+    <button id="copyTable">Mark Table Data</button>
     
     <div class="spacer">
     <div class="value-label"> </div>
@@ -205,31 +206,15 @@
             dataTable.style.display = 'block';
         });
 
-        document.getElementById('exportData').addEventListener('click', () => {
-            // CSV-Header
-            let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
+       document.getElementById('copyTable').addEventListener('click', () => {
+            const table = document.getElementById('dataTableElement');
+            const range = document.createRange();
+            const selection = window.getSelection();
 
-            // CSV-Daten
-            exampleData.forEach(entry => {
-                csvContent += `${entry.timestamp},${entry.afrValue},${entry.temperature},${entry.voltage},${entry.rpm},${entry.throttle}\n`;
-            });
-
-            // Blob erstellen
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            
-            // Download-Link erstellen
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'sensor_data.csv'; // Dateiname für den Download
-
-            // Automatischen Klick auslösen
-            link.click();
-
-            // Speicher freigeben
-            URL.revokeObjectURL(url);
+            range.selectNodeContents(table); // Markiert den gesamten Tabelleninhalt
+            selection.removeAllRanges(); // Entfernt bestehende Markierungen
+            selection.addRange(range); // Fügt die Tabelle zur Markierung hinzu
         });
-
     </script>
 </body>
 </html>
