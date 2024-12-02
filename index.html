@@ -208,7 +208,7 @@
 
         
 
-      document.getElementById("selectAllBtn").addEventListener("click", () => {
+   document.getElementById("selectAllBtn").addEventListener("click", () => {
     const table = document.querySelector("#dataTable table");
 
     if (!table) {
@@ -222,7 +222,14 @@
     // Entferne vorherige Markierungen
     selection.removeAllRanges();
 
-    // Versuche den Tabelleninhalt zu markieren
+    // Versuche explizit den Fokus zu setzen, bevor die Auswahl erfolgt
+    try {
+        table.focus(); // Erzwinge Fokus (hilfreich bei komplexen DOM-Strukturen)
+    } catch {
+        console.log("Table cannot be focused, continuing...");
+    }
+
+    // Wähle den Inhalt der Tabelle
     try {
         range.selectNodeContents(table);
         selection.addRange(range);
@@ -232,6 +239,7 @@
         console.error("Error selecting table content:", error);
     }
 });
+
 
 
 
