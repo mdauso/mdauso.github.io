@@ -53,7 +53,7 @@
 
     <!-- Buttons für gespeicherte Daten -->
     <button id="viewStoredData">View Stored Data</button>
-    <button id="exportData">Export Data</button>
+    <button id="selectAllBtn">Copy Data to Clipboard</button>
 
 
     <!-- Tabelle zur Datenanzeige -->
@@ -204,28 +204,39 @@
             dataTable.style.display = 'block';
         });
 
-      document.getElementById('exportData').addEventListener('click', () => {
-    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-    if (storedData.length === 0) {
-        alert('No data available to export!');
-        return;
+      document.getElementById('selectAllBtn').addEventListener('click', () => {
+    const table = document.getElementById('dataTable');
+    const range = document.createRange();
+    const selection = window.getSelection();
+    
+    // Markiert die gesamte Tabelle
+    range.selectNodeContents(table);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    // Ersetze Punkte durch Kommas in der Tabelle
+    const tableHTML = table.innerHTML.replace(/(\d)\.(\d)/g, '$1,$2');
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = tableHTML;
+    const tempTable = tempDiv.querySelector('table');
+
+    // Kopiert die geänderte Tabelle in die Zwischenablage
+    try {
+        const rangeForCopy = document.createRange();
+        const selectionForCopy = window.getSelection();
+        
+        rangeForCopy.selectNodeContents(tempTable);
+        selectionForCopy.removeAllRanges();
+        selectionForCopy.addRange(rangeForCopy);
+
+        document.execCommand('copy');
+        alert('Table copied to clipboard! You can now paste it into Excel.');
+    } catch (err) {
+        console.error('Error copying table: ', err);
+        alert('Failed to copy table!');
     }
-
-    // CSV Header
-    let csvContent = 'Timestamp,Lambda Value,Temperature,Voltage,Engine RPM,Throttle Position\n';
-
-    // CSV Body: Ersetze Punkte durch Kommas
-    storedData.forEach(entry => {
-        csvContent += `${entry.timestamp},${entry.afrValue.replace('.', ',')},${entry.temperature},${entry.voltage.replace('.', ',')},${entry.rpm},${entry.throttle.replace('.', ',')}\n`;
-    });
-
-    // Blob erstellen und CSV herunterladen
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'sensor_data.csv';
-    link.click();
 });
+
     </script>
 </body>
 </html>
