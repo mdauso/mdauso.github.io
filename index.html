@@ -215,17 +215,14 @@
         tableContent += `${entry.timestamp}\t${entry.afrValue}\t${entry.temperature}\t${entry.voltage}\t${entry.rpm}\t${entry.throttle}\n`;
     });
 
-    // Temporäre Textarea erstellen, um den Text zu kopieren
-    const textarea = document.createElement('textarea');
-    textarea.value = tableContent;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-
-    alert('Data copied to clipboard! You can now paste it into Whatever.');
+    // Verwenden der Clipboard API zum Kopieren
+    navigator.clipboard.writeText(tableContent).then(() => {
+        alert('Data copied to clipboard! You can now paste it into Excel.');
+    }).catch(err => {
+        console.error('Error copying text: ', err);
+        alert('Failed to copy data!');
+    });
 });
-
     </script>
 </body>
 </html>
