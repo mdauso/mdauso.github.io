@@ -5,11 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D CSV Visualisierung</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; position: relative; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        #plotContainer { width: 100vw; height: 80vh; display: flex; justify-content: center; align-items: center; }
+        #plot { width: 90%; height: 100%; }
+        #logo { position: absolute; top: 10px; right: 10px; height: 50px; }
+    </style>
 </head>
 <body>
+    <img id="logo" src="https://example.com/dein-logo.png" alt="Logo">
     <h2>CSV-Datei hochladen</h2>
     <input type="file" id="csvFile" accept=".csv">
-    <div id="plot"></div>
+    <p id="error" style="color: red;"></p>
+    <h3>CSV-Vorschau</h3>
+    <table id="csvPreviewTable"></table>
+    <div id="plotContainer">
+        <div id="plot"></div>
+    </div>
 
     <script>
         document.getElementById('csvFile').addEventListener('change', function(event) {
@@ -18,28 +33,62 @@
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                const lines = e.target.result.split('\n');
-                let rpm = [], throttle = [], lambda = [];
+                try {
+                    const lines = e.target.result.split('\n').map(line => line.trim()).filter(line => line);
+                    if (lines.length < 2) throw new Error("Die CSV-Datei ist leer oder hat nur eine Kopfzeile.");
+                    
+                    let table = document.getElementById('csvPreviewTable');
+                    table.innerHTML = "";
+                    let header = lines[0].split(/[,;\t]/);
+                    let headerRow = table.insertRow();
+                    header.forEach(text => {
+                        let th = document.createElement('th');
+                        th.textContent = text;
+                        headerRow.appendChild(th);
+                    });
+                    
+                    for (let i = 1; i < Math.min(lines.length, 6); i++) {
+                        let values = lines[i].split(/[,;\t]/);
+                        let row = table.insertRow();
+                        values.forEach(value => {
+                            let cell = row.insertCell();
+                            cell.textContent = value;
+                        });
+                    }
+                    
+                    let rpm = [], throttle = [], lambda = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        let values = lines[i].split(/[,;\t]/);
+                        if (values.length < 5) throw new Error("Ungültiges CSV-Format in Zeile " + (i + 1));
 
-                for (let i = 1; i < lines.length; i++) {
-                    let values = lines[i].split(',');
-                    if (values.length >= 5) {
                         rpm.push(parseFloat(values[1]));
                         throttle.push(parseFloat(values[2]));
                         lambda.push(parseFloat(values[4]));
                     }
+                    
+                    let trace = {
+                        x: rpm,
+                        y: throttle,
+                        z: lambda,
+                        mode: 'markers',
+                        marker: { size: 5, color: lambda, colorscale: 'Viridis', colorbar: { title: 'Lambda' } },
+                        type: 'scatter3d'
+                    };
+
+                    let layout = {
+                        margin: { t: 0 },
+                        scene: {
+                            xaxis: { title: 'Drehzahl (RPM)' },
+                            yaxis: { title: 'Drosselklappe (%)' },
+                            zaxis: { title: 'Lambda' }
+                        }
+                    };
+                    
+                    Plotly.newPlot('plot', [trace], layout);
+                    document.getElementById('error').textContent = "";
+                } catch (err) {
+                    document.getElementById('error').textContent = "Fehler: " + err.message;
                 }
-
-                let trace = {
-                    x: rpm,
-                    y: throttle,
-                    z: lambda,
-                    mode: 'markers',
-                    marker: { size: 5, color: lambda, colorscale: 'Viridis' },
-                    type: 'scatter3d'
-                };
-
-                Plotly.newPlot('plot', [trace], { margin: { t: 0 } });
             };
 
             reader.readAsText(file);
@@ -47,4 +96,3 @@
     </script>
 </body>
 </html>
-
