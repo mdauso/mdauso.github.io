@@ -26,7 +26,7 @@
             position: absolute;
             top: 10px;
             right: 20px;
-            height: 50px;
+            height: 70px;
         }
         h1 {
             margin: 0;
@@ -98,6 +98,31 @@
             width: 100%;
             height: 100%;
         }
+
+        /* Neues Pane für interaktive Farbskaleneinstellungen */
+        #colorControls {
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        #colorControls h3 {
+            margin-top: 0;
+        }
+        #colorControls label {
+            display: inline-block;
+            width: 80px;
+        }
+        #colorControls input[type='number'] {
+            width: 60px;
+        }
+        #colorControls select {
+            width: 100px;
+        }
+        #colorControls button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -119,6 +144,33 @@
                 <h3>CSV-Vorschau</h3>
                 <table id="csvPreviewTable"></table>
             </div>
+
+            <!-- Farbskala-Einstellungen -->
+            <div id="colorControls">
+                <h3>Farbskala</h3>
+                <div>
+                    <label for="cminInput">cmin:</label>
+                    <input type="number" id="cminInput" step="0.1" value="0" />
+                </div>
+                <div>
+                    <label for="cmaxInput">cmax:</label>
+                    <input type="number" id="cmaxInput" step="0.1" value="2" />
+                </div>
+                <div>
+                    <label for="scaleSelect">Skala:</label>
+                    <select id="scaleSelect">
+                        <!-- Eingebaute Plotly-Farbskalen -->
+                        <option value="Viridis" selected>Viridis</option>
+                        <option value="Cividis">Cividis</option>
+                        <option value="Jet">Jet</option>
+                        <option value="RdBu">RdBu</option>
+                        <option value="Portland">Portland</option>
+                        <option value="Picnic">Picnic</option>
+                        <option value="Rainbow">Rainbow</option>
+                    </select>
+                </div>
+                <button id="applyColorBtn">Anwenden</button>
+            </div>
         </div>
 
         <div id="plotContainer">
@@ -127,7 +179,10 @@
     </div>
 
     <script>
-        // CSV-Datei einlesen und verarbeiten
+        // Variable für den aktuellen Trace, damit wir ihn nach dem Laden anpassen können
+        let currentTrace = null;
+
+        // CSV-Datei einlesen und verarbeiten (genau wie in deinem funktionierenden Code)
         document.getElementById('csvFile').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -176,7 +231,7 @@
                     }
 
                     // 3D-Punktewolke definieren
-                    let trace = {
+                    currentTrace = {
                         x: rpm,
                         y: throttle,
                         z: lambda,
@@ -201,7 +256,7 @@
                     };
 
                     // Diagramm anzeigen
-                    Plotly.newPlot('plot', [trace], layout);
+                    Plotly.newPlot('plot', [currentTrace], layout);
 
                     // Fehleranzeige leeren
                     document.getElementById('error').textContent = '';
@@ -211,6 +266,26 @@
             };
 
             reader.readAsText(file);
+        });
+
+        // Button zum Anwenden der Farbskaleneinstellungen
+        document.getElementById('applyColorBtn').addEventListener('click', function() {
+            if (!currentTrace) {
+                alert('Bitte zuerst eine CSV-Datei laden!');
+                return;
+            }
+
+            // Eingaben aus dem UI holen
+            const cmin = parseFloat(document.getElementById('cminInput').value);
+            const cmax = parseFloat(document.getElementById('cmaxInput').value);
+            const newScale = document.getElementById('scaleSelect').value; // Plotly-Farbskala
+
+            // Diagramm via Plotly.update() aktualisieren
+            Plotly.update('plot', {
+                'marker.cmin': [cmin],
+                'marker.cmax': [cmax],
+                'marker.colorscale': [newScale]
+            }, {}, 0);
         });
     </script>
 </body>
