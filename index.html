@@ -1,292 +1,354 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MD-Lambda-View 3D CSV Visualisierung</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
+  <meta charset="UTF-8">
+  <title>MD-Lambda-View 3D Binning + Farbskala</title>
+  <!-- Plotly-Bibliothek -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
 
-        /* HEADER mit Logo + Überschrift */
-        #header {
-            position: relative;
-            text-align: center;
-            padding: 30px 0; /* Erhöht die Überschrift-Höhe */
-            border-bottom: 1px solid #ccc;
-            flex-shrink: 0; /* Verhindert, dass der Header beim Flex-Layout verschwindet */
-        }
-        #logo {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            height: 70px;
-        }
-        h1 {
-            margin: 0;
-            padding: 0;
-        }
+    /* HEADER */
+    #header {
+      position: relative;
+      text-align: center;
+      padding: 30px 0;
+      border-bottom: 1px solid #ccc;
+      flex-shrink: 0;
+    }
+    #logo {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      height: 75px;
+    }
+    h1 {
+      margin: 0;
+      padding: 0;
+    }
 
-        /* Hauptbereich: Linkes Pane + Diagramm */
-        #mainContent {
-            flex: 1;
-            display: flex;
-            flex-direction: row;
-            overflow: hidden; /* Verhindert globalen Scrollbalken, wenn Pane oder Diagramm zu groß sind */
-        }
+    /* Hauptbereich: linkes Pane + Diagramm */
+    #mainContent {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+    }
+    #leftPane {
+      width: 300px;
+      min-width: 250px;
+      border-right: 1px solid #ccc;
+      padding: 10px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+    #fileInputContainer {
+      margin-bottom: 10px;
+    }
+    #error {
+      color: red;
+    }
+    #csvPreviewContainer {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: auto;
+      border: 1px solid #ddd;
+      padding: 5px;
+      margin-top: 10px;
+    }
+    table {
+      border-collapse: collapse;
+      table-layout: auto;
+      width: auto;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
 
-        /* Linkes Pane: Import-Button + CSV-Vorschau */
-        #leftPane {
-            width: 300px;
-            min-width: 250px;
-            border-right: 1px solid #ccc;
-            padding: 10px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-        }
-        #fileInputContainer {
-            margin-bottom: 10px;
-        }
-        #error {
-            color: red;
-        }
+    /* Diagramm */
+    #plotContainer {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    #plot {
+      width: 100%;
+      height: 100%;
+    }
 
-        /* CSV-Vorschau mit vertikalem Scrollen und möglichem horizontalen Scrollen */
-        #csvPreviewContainer {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: auto; /* Damit Spalten nicht umgebrochen werden und ggf. horizontal scrollen */
-            border: 1px solid #ddd;
-            padding: 5px;
-            margin-top: 10px;
-        }
-
-        /* Tabelle mit automatischer Spaltenbreite + kein Zeilenumbruch */
-        table {
-            border-collapse: collapse;
-            table-layout: auto;  /* Passt Spaltenbreite an Inhalt an */
-            width: auto;         /* Kein erzwungenes 100% */
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px; /* Vergrößert Padding für breitere Spalten */
-            text-align: left;
-            font-size: 12px;
-            white-space: nowrap; /* Kein Zeilenumbruch in Zellen */
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-
-        /* Diagramm rechts nimmt den restlichen Platz ein */
-        #plotContainer {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        #plot {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Neues Pane für interaktive Farbskaleneinstellungen */
-        #colorControls {
-            margin-top: 10px;
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-        #colorControls h3 {
-            margin-top: 0;
-        }
-        #colorControls label {
-            display: inline-block;
-            width: 80px;
-        }
-        #colorControls input[type='number'] {
-            width: 60px;
-        }
-        #colorControls select {
-            width: 100px;
-        }
-        #colorControls button {
-            margin-top: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
+    /* Farbskala-Einstellungen */
+    #colorControls {
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+    #colorControls h3 {
+      margin-top: 0;
+    }
+    #colorControls label {
+      display: inline-block;
+      width: 80px;
+    }
+    #colorControls input[type='number'] {
+      width: 60px;
+    }
+    #colorControls select {
+      width: 100px;
+    }
+    #colorControls button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <!-- Header mit Logo + Überschrift -->
-    <div id="header">
-        <img id="logo" src="https://cafebrick.files.wordpress.com/2018/11/cropped-md.png" alt="Logo">
-        <h1>MD-Lambda-View 3D Visualisierung</h1>
+  <!-- HEADER -->
+  <div id="header">
+    <!-- Logo-Pfad anpassen -->
+    <img id="logo" src="https://cafebrick.files.wordpress.com/2018/11/cropped-md.png" alt="Logo">
+    <h1>MD-Lambda-View 3D Visualisation</h1>
+  </div>
+
+  <div id="mainContent">
+    <div id="leftPane">
+      <!-- CSV-Upload -->
+      <div id="fileInputContainer">
+        <h3>CSV-Datei hochladen</h3>
+        <input type="file" id="csvFile" accept=".csv">
+        <p id="error"></p>
+      </div>
+
+      <!-- CSV-Vorschau -->
+      <div id="csvPreviewContainer">
+        <h3>CSV-Vorschau</h3>
+        <table id="csvPreviewTable"></table>
+      </div>
+
+      <!-- Farbskala -->
+      <div id="colorControls">
+        <h3>Farbskala</h3>
+        <div>
+          <label for="cminInput">cmin:</label>
+          <input type="number" id="cminInput" step="0.1" value="0.6" />
+        </div>
+        <div>
+          <label for="cmaxInput">cmax:</label>
+          <input type="number" id="cmaxInput" step="0.1" value="1.2" />
+        </div>
+        <div>
+          <label for="scaleSelect">Skala:</label>
+          <select id="scaleSelect">
+            <!-- Eingebaute Plotly-Farbskalen -->
+            <option value="Viridis">Viridis</option>
+            <option value="Cividis">Cividis</option>
+            <option value="Jet">Jet</option>
+            <option value="RdBu">RdBu</option>
+            <option value="Portland">Portland</option>
+            <option value="Picnic">Picnic</option>
+            <option value="Rainbow" selected>Rainbow</option>
+          </select>
+        </div>
+        <button id="applyColorBtn">Anwenden</button>
+      </div>
     </div>
 
-    <!-- Hauptbereich: linke Spalte + Diagramm -->
-    <div id="mainContent">
-        <div id="leftPane">
-            <div id="fileInputContainer">
-                <h3>CSV-Datei hochladen</h3>
-                <input type="file" id="csvFile" accept=".csv">
-                <p id="error"></p>
-            </div>
-            <div id="csvPreviewContainer">
-                <h3>CSV-Vorschau</h3>
-                <table id="csvPreviewTable"></table>
-            </div>
-
-            <!-- Farbskala-Einstellungen -->
-            <div id="colorControls">
-                <h3>Farbskala</h3>
-                <div>
-                    <label for="cminInput">cmin:</label>
-                    <input type="number" id="cminInput" step="0.1" value="0.6" />
-                </div>
-                <div>
-                    <label for="cmaxInput">cmax:</label>
-                    <input type="number" id="cmaxInput" step="0.1" value="1.1" />
-                </div>
-                <div>
-                    <label for="scaleSelect">Skala:</label>
-                    <select id="scaleSelect">
-                        <!-- Eingebaute Plotly-Farbskalen -->
-                        <option value="Viridis">Viridis</option>
-                        <option value="Cividis">Cividis</option>
-                        <option value="Jet">Jet</option>
-                        <option value="RdBu">RdBu</option>
-                        <option value="Portland">Portland</option>
-                        <option value="Picnic">Picnic</option>
-                        <option value="Rainbow" selected>Rainbow</option>
-                    </select>
-                </div>
-                <button id="applyColorBtn">Anwenden</button>
-            </div>
-        </div>
-
-        <div id="plotContainer">
-            <div id="plot"></div>
-        </div>
+    <div id="plotContainer">
+      <div id="plot"></div>
     </div>
+  </div>
 
-    <script>
-        // Variable für den aktuellen Trace, damit wir ihn nach dem Laden anpassen können
-        let currentTrace = null;
+  <script>
+    let currentTrace = null; // Für das Diagramm
 
-        // CSV-Datei einlesen und verarbeiten (genau wie in deinem funktionierenden Code)
-        document.getElementById('csvFile').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+    document.getElementById('csvFile').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    // CSV-Zeilen lesen und leere entfernen
-                    const lines = e.target.result.split('\n').map(line => line.trim()).filter(line => line);
-                    if (lines.length < 2) {
-                        throw new Error('Die CSV-Datei ist leer oder hat nur eine Kopfzeile.');
-                    }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          // BOM + Windows-Zeilenenden entfernen
+          let raw = e.target.result
+            .replace(/^\uFEFF/, '')
+            .replace(/\r\n/g, '\n');
 
-                    // CSV-Vorschau in Tabelle darstellen
-                    let table = document.getElementById('csvPreviewTable');
-                    table.innerHTML = '';
-                    let header = lines[0].split(/[,;\t]/);
-                    let headerRow = table.insertRow();
-                    header.forEach(text => {
-                        let th = document.createElement('th');
-                        th.textContent = text;
-                        headerRow.appendChild(th);
-                    });
+          // Zeilen bilden
+          const lines = raw.split('\n').map(line => line.trim()).filter(line => line);
 
-                    // Datenzeilen
-                    for (let i = 1; i < lines.length; i++) {
-                        let values = lines[i].split(/[,;\t]/);
-                        let row = table.insertRow();
-                        values.forEach(value => {
-                            let cell = row.insertCell();
-                            cell.textContent = value;
-                        });
-                    }
+          // Kopfzeile + mind. 1 Datenzeile => >= 2
+          if (lines.length < 2) {
+            throw new Error('Die CSV-Datei ist leer oder hat nur eine Kopfzeile.');
+          }
 
-                    // Werte für Diagramm sammeln
-                    let rpm = [], throttle = [], lambda = [];
-                    for (let i = 1; i < lines.length; i++) {
-                        let values = lines[i].split(/[,;\t]/);
-                        if (values.length < 5) {
-                            throw new Error('Ungültiges CSV-Format in Zeile ' + (i + 1));
-                        }
+          // Kopfzeile
+          let header = lines[0].split(';');
+          if (header.length < 5) {
+            throw new Error('Die Kopfzeile muss mind. 5 Spalten haben.');
+          }
 
-                        rpm.push(parseFloat(values[1]));
-                        throttle.push(parseFloat(values[2]));
-                        lambda.push(parseFloat(values[4]));
-                    }
+          // Vorschau-Tabelle
+          let table = document.getElementById('csvPreviewTable');
+          table.innerHTML = '';
 
-                    // 3D-Punktewolke definieren
-                    currentTrace = {
-                        x: rpm,
-                        y: throttle,
-                        z: lambda,
-                        mode: 'markers',
-                        marker: {
-                            size: 5,
-                            color: lambda,
-                            colorscale: 'Viridis',
-                            colorbar: { title: 'Lambda' }
-                        },
-                        type: 'scatter3d'
-                    };
+          let headerRow = table.insertRow();
+          header.forEach(text => {
+            let th = document.createElement('th');
+            th.textContent = text;
+            headerRow.appendChild(th);
+          });
 
-                    // Layout für Plot
-                    let layout = {
-                        margin: { t: 0 },
-                        scene: {
-                            xaxis: { title: 'Drehzahl (RPM)' },
-                            yaxis: { title: 'Drosselklappe (%)' },
-                            zaxis: { title: 'Lambda' }
-                        }
-                    };
+          // Arrays (wir kümmern uns nur um Spalte 1=RPM, 2=Throttle, 4=Lambda)
+          let rpm = [];
+          let throttle = [];
+          let lambda = [];
 
-                    // Diagramm anzeigen
-                    Plotly.newPlot('plot', [currentTrace], layout);
+          // Datenzeilen
+          for (let i = 1; i < lines.length; i++) {
+            let row = table.insertRow();
+            let values = lines[i].split(';');
 
-                    // Fehleranzeige leeren
-                    document.getElementById('error').textContent = '';
-                } catch (err) {
-                    document.getElementById('error').textContent = 'Fehler: ' + err.message;
-                }
-            };
+            values.forEach(value => {
+              let cell = row.insertCell();
+              cell.textContent = value;
+            });
 
-            reader.readAsText(file);
-        });
-
-        // Button zum Anwenden der Farbskaleneinstellungen
-        document.getElementById('applyColorBtn').addEventListener('click', function() {
-            if (!currentTrace) {
-                alert('Bitte zuerst eine CSV-Datei laden!');
-                return;
+            if (values.length < 5) {
+              throw new Error(`Zeile ${i+1} hat weniger als 5 Spalten!`);
             }
 
-            // Eingaben aus dem UI holen
-            const cmin = parseFloat(document.getElementById('cminInput').value);
-            const cmax = parseFloat(document.getElementById('cmaxInput').value);
-            const newScale = document.getElementById('scaleSelect').value; // Plotly-Farbskala
+            // Komma => Punkt
+            let rpmVal      = parseFloat(values[1].replace(',', '.'));
+            let throttleVal = parseFloat(values[2].replace(',', '.'));
+            let lambdaVal   = parseFloat(values[4].replace(',', '.'));
 
-            // Diagramm via Plotly.update() aktualisieren
-            Plotly.update('plot', {
-                'marker.cmin': [cmin],
-                'marker.cmax': [cmax],
-                'marker.colorscale': [newScale]
-            }, {}, 0);
-        });
-    </script>
+            rpm.push(rpmVal);
+            throttle.push(throttleVal);
+            lambda.push(lambdaVal);
+          }
+
+          // ========== BINNING ==========
+          // 1) min/max RPM finden
+          let minRpm = Math.min(...rpm);
+          let maxRpm = Math.max(...rpm);
+
+          // 2) Alle 100er-Schritte anlegen
+          let startBin = Math.floor(minRpm / 100) * 100;
+          let endBin   = Math.ceil(maxRpm / 100) * 100;
+
+          let binData = {};
+          for (let b = startBin; b <= endBin; b += 100) {
+            binData[b] = { sumT: 0, sumL: 0, cnt: 0 };
+          }
+
+          // 3) Daten in Bins packen
+          function getBinKey(r) {
+            let key = Math.floor(r / 100) * 100;
+            if (key < startBin) key = startBin;
+            if (key > endBin)   key = endBin;
+            return key;
+          }
+
+          for (let i = 0; i < rpm.length; i++) {
+            let binKey = getBinKey(rpm[i]);
+            binData[binKey].sumT += throttle[i];
+            binData[binKey].sumL += lambda[i];
+            binData[binKey].cnt++;
+          }
+
+          // 4) Mittelwerte pro Bin
+          let binnedRpm = [];
+          let binnedThrottle = [];
+          let binnedLambda = [];
+
+          let sortedKeys = Object.keys(binData).map(Number).sort((a,b)=>a-b);
+          for (let k of sortedKeys) {
+            let entry = binData[k];
+            if (entry.cnt === 0) {
+              // Keine Daten => wir skippen, damit kein Nullwert gezeichnet wird
+              continue;
+            }
+            let avgT = entry.sumT / entry.cnt;
+            let avgL = entry.sumL / entry.cnt;
+
+            binnedRpm.push(k);
+            binnedThrottle.push(avgT);
+            binnedLambda.push(avgL);
+          }
+
+          // ========== Diagramm mit Binned-Daten ==========
+          currentTrace = {
+            x: binnedRpm,
+            y: binnedThrottle,
+            z: binnedLambda,
+            mode: 'markers',
+            marker: {
+              size: 5,
+              color: binnedLambda,
+              colorscale: 'Rainbow',
+              colorbar: {
+                title: 'Lambda',
+                len: 0.7,
+                y: 0.5,
+                yanchor: 'middle'
+              }
+            },
+            type: 'scatter3d'
+          };
+
+          let layout = {
+            margin: { t: 0 },
+            scene: {
+              xaxis: { title: 'Drehzahl-Bin (U/min)' },
+              yaxis: { title: 'Ø-Drosselklappe (%)' },
+              zaxis: { title: 'Ø-Lambda' }
+            }
+          };
+
+          Plotly.newPlot('plot', [currentTrace], layout);
+
+          document.getElementById('error').textContent = '';
+        } catch (err) {
+          document.getElementById('error').textContent = 'Fehler: ' + err.message;
+        }
+      };
+
+      reader.readAsText(file);
+    });
+
+    // Farbskala-Einstellungen
+    document.getElementById('applyColorBtn').addEventListener('click', function() {
+      if (!currentTrace) {
+        alert('Bitte zuerst eine CSV-Datei laden!');
+        return;
+      }
+      const cmin = parseFloat(document.getElementById('cminInput').value);
+      const cmax = parseFloat(document.getElementById('cmaxInput').value);
+      const newScale = document.getElementById('scaleSelect').value;
+
+      Plotly.update('plot', {
+        'marker.cmin': [cmin],
+        'marker.cmax': [cmax],
+        'marker.colorscale': [newScale]
+      }, {}, 0);
+    });
+  </script>
 </body>
 </html>
