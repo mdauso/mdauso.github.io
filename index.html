@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MD-Lambda-View 3D Visualisierung</title>
+    <title>3D CSV Visualisierung</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; position: relative; }
+        body { font-family: Arial, sans-serif; position: relative; text-align: center; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f4f4f4; }
         #plotContainer { width: 100vw; height: 80vh; display: flex; justify-content: center; align-items: center; }
         #plot { width: 90%; height: 100%; }
         #logo { position: absolute; top: 10px; right: 10px; height: 50px; }
+        h1 { margin-top: 20px; }
     </style>
 </head>
 <body>
     <img id="logo" src="https://cafebrick.files.wordpress.com/2018/11/cropped-md.png" alt="Logo">
-    <h2>CSV-Datei hochladen</h2>
+    <h1>MD-Lambda-View 3D-Visualisation</h1>
+    <h2>CSV-File Upload</h2>
     <input type="file" id="csvFile" accept=".csv">
     <p id="error" style="color: red;"></p>
     <h3>CSV-Vorschau</h3>
@@ -78,8 +80,8 @@
                     let layout = {
                         margin: { t: 0 },
                         scene: {
-                            xaxis: { title: 'Drehzahl (RPM)' },
-                            yaxis: { title: 'Drosselklappe (%)' },
+                            xaxis: { title: 'Engine Speed (RPM)' },
+                            yaxis: { title: 'Throttle (%)' },
                             zaxis: { title: 'Lambda' }
                         }
                     };
