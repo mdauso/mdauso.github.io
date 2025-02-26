@@ -1,232 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MD Lambda View</title>
-    <link rel="stylesheet" href="./style.css">
+    <title>3D CSV Visualisierung</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <h1>MD Lambda View</h1>
-
-    <div class="spacer">
-        <div class="value-label"> </div>
-    </div>
-    
-    <button id="connectBtn">Connect to Device</button>
-
-    <div class="data-container">
-        <div class="value-label">Lambda Value:</div>
-        <div id="lambdaValue" class="lambda-value">--</div>
-    </div>
-
-    <div class="data-container small-value-container">
-        <div class="value-label">Sensor Temperature (°C):</div>
-        <div id="tempValue" class="small-value">--</div>
-    </div>
-
-    <div class="data-container small-value-container">
-        <div class="value-label">Engine RPM (1/min):</div>
-        <div id="rpmValue" class="small-value">--</div>
-    </div>
-
-    <div class="data-container small-value-container">
-        <div class="value-label">Throttle Position (%):</div>
-        <div id="throttleValue" class="small-value">--</div>
-    </div>
-
-    <div class="data-container small-value-container">
-        <div class="value-label">Voltage (V):</div>
-        <div id="voltageValue" class="small-value">--</div>
-    </div>
-
-    <div class="spacer1">
-    <div class="value-label"> </div>
-    </div>
-
-    <!-- Buttons für gespeicherte Daten -->
-    <button id="viewStoredData">View Stored Data</button>
-
-    <button id="selectAllBtn">Mark all Entries</button>
-
-    <!-- Button zum Wechseln zur Graph-Seite mit CSS-Klasse -->
-    <button class="styled-button" onclick="window.location.href='Information.html'">More Info</button> 
-   
-
-    <!-- Tabelle zur Datenanzeige -->
-    <div id="dataTable" style="margin-top: 20px; display: none;">
-       <center> <h2>Stored Data</h2> </center>
-        <table border="1" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Lambda</th>
-                    <th>Temp</th>
-                    <th>Volt</th>
-                    <th>RPM</th>
-                    <th>Throttle</th>
-                </tr>
-            </thead>
-            <tbody id="dataTableBody">
-            </tbody>
-        </table>
-    </div>
+    <h2>CSV-Datei hochladen</h2>
+    <input type="file" id="csvFile" accept=".csv">
+    <div id="plot"></div>
 
     <script>
-        let device;
-        let serialCharacteristic;
-        let buffer = [];
-        let lastCharTime = 0;
-        const CHARS_PER_FRAME = 9;
-        const START_CODE = 1;
-        const GAP_TIME_MS = 40;
+        document.getElementById('csvFile').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-        const LSU_4_9_Temperature_Array = [
-            80, 78, 77, 75, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61, 60, 59, 58, 56, 55, 54, 52, 51, 50, 49, 48, 46, 
-            45, 44, 43, 42, 41, 40, 39, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 
-            18, 18, 17, 16, 15, 14, 13, 12, 11, 11, 10, 9, 8, 7, 6, 5, 5, 4, 3, 2, 1, 1, 0
-        ];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split('\n');
+                let rpm = [], throttle = [], lambda = [];
 
-        document.getElementById('connectBtn').addEventListener('click', async () => {
-            try {
-                device = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: 'MD-Lambda-View' }],
-                    optionalServices: ['FFE0']
-                });
-                const server = await device.gatt.connect();
-                const service = await server.getPrimaryService('FFE0');
-                serialCharacteristic = await service.getCharacteristic('FFE1');
-                await serialCharacteristic.startNotifications();
-                serialCharacteristic.addEventListener('characteristicvaluechanged', handleSerialData);
-            } catch (error) {
-                console.error('Connection failed:', error);
-            }
-        });
-
-        function handleSerialData(event) {
-            const now = Date.now();
-            if (now - lastCharTime > GAP_TIME_MS) {
-                buffer = [];
-            }
-            lastCharTime = now;
-
-            const data = new Uint8Array(event.target.value.buffer);
-            for (let byte of data) {
-                buffer.push(byte);
-                if (buffer.length >= CHARS_PER_FRAME) {
-                    processFrame(buffer.slice(0, CHARS_PER_FRAME));
-                    buffer = buffer.slice(CHARS_PER_FRAME);
+                for (let i = 1; i < lines.length; i++) {
+                    let values = lines[i].split(',');
+                    if (values.length >= 5) {
+                        rpm.push(parseFloat(values[1]));
+                        throttle.push(parseFloat(values[2]));
+                        lambda.push(parseFloat(values[4]));
+                    }
                 }
-            }
-        }
 
-        function processFrame(data) {
-            if (data[0] !== START_CODE) {
-                console.warn("Invalid start byte:", data[0]);
-                return;
-            }
+                let trace = {
+                    x: rpm,
+                    y: throttle,
+                    z: lambda,
+                    mode: 'markers',
+                    marker: { size: 5, color: lambda, colorscale: 'Viridis' },
+                    type: 'scatter3d'
+                };
 
-            const afrCode = data[1];
-            const tempCode = data[2];
-            const voltageCode = data[3];
-            const rpmCode = data[4];
-            const throttleCode = data[5];
-
-            const afrValue = afrCode / 147;
-            const temperature = getTemperature(tempCode);
-            const voltage = voltageCode / 10.0;
-            const rpm = rpmCode * 33;
-            const throttle = throttleCode;
-
-            updateValues(afrValue, temperature, voltage, rpm, throttle);
-            saveData(afrValue, temperature, voltage, rpm, throttle);
-        }
-
-        function getTemperature(index) {
-            if (index >= 0 && index < LSU_4_9_Temperature_Array.length) {
-                return (LSU_4_9_Temperature_Array[index] + 740);
-            } else {
-                console.warn("Temperature index out of range:", index);
-                return 0;
-            }
-        }
-
-        function updateValues(afrValue, temperature, voltage, rpm, throttle) {
-            document.getElementById('lambdaValue').textContent = afrValue.toFixed(2);
-            document.getElementById('tempValue').textContent = temperature.toString();
-            document.getElementById('voltageValue').textContent = voltage.toFixed(1);
-            document.getElementById('rpmValue').textContent = rpm.toString();
-            document.getElementById('throttleValue').textContent = throttle.toFixed(1);
-        }
-
-        function saveData(afrValue, temperature, voltage, rpm, throttle) {
-            const existingData = JSON.parse(localStorage.getItem('sensorData')) || [];
-            const newData = { 
-                timestamp: new Date().toISOString(),
-                afrValue: afrValue.toFixed(2), 
-                temperature: temperature, 
-                voltage: voltage.toFixed(1),
-                rpm: rpm,
-                throttle: throttle.toFixed(1)
+                Plotly.newPlot('plot', [trace], { margin: { t: 0 } });
             };
-            existingData.push(newData);
-            localStorage.setItem('sensorData', JSON.stringify(existingData));
-        }
 
-        
-        document.getElementById('viewStoredData').addEventListener('click', () => {
-    const storedData = JSON.parse(localStorage.getItem('sensorData')) || [];
-    const dataTable = document.getElementById('dataTable');
-    const tableBody = document.getElementById('dataTableBody');
-    tableBody.innerHTML = '';
-
-    if (storedData.length === 0) {
-        alert('No data stored yet!');
-        dataTable.style.display = 'none';
-        return;
-    }
-
-    storedData.forEach(entry => {
-        const row = document.createElement('tr');
-        
-        // Ersetzen der Punkte durch Kommas, bevor die Werte in die Tabelle eingefügt werden
-        row.innerHTML = `
-            <td>${entry.timestamp}</td>
-            <td>${entry.afrValue.replace('.', ',')}</td>
-            <td>${entry.temperature}</td>
-            <td>${entry.voltage.replace('.', ',')}</td>
-            <td>${entry.rpm}</td>
-            <td>${entry.throttle.replace('.', ',')}</td>
-        `;
-        
-        tableBody.appendChild(row);
-    });
-
-    dataTable.style.display = 'block';
-});
-
-        document.getElementById("selectAllBtn").addEventListener("click", () => {
-    const table = document.querySelector("#dataTable table");
-    if (!table) {
-        alert("No data available to select!");
-        return;
-    }
-
-    const dataTable = document.getElementById('dataTable');
-    dataTable.style.display = 'block'; // Sicherstellen, dass die Tabelle sichtbar ist
-
-    // Reflow erzwingen
-    table.offsetHeight; // Zugriff auf eine Layout-Eigenschaft (z. B. offsetHeight)
-
-    // Markierung setzen
-    const range = document.createRange();
-    range.selectNodeContents(table);
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-});
-
-
+            reader.readAsText(file);
+        });
     </script>
 </body>
 </html>
+
