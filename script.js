@@ -161,3 +161,10 @@ document.getElementById('applyColorBtn').addEventListener('click', function() {
 
   console.log("🔥 Farbskala erfolgreich aktualisiert!");
 });
+
+window.addEventListener('resize', function() {
+  Plotly.relayout('plot', {
+    width: window.innerWidth * 0.98,
+    height: window.innerHeight * 0.98
+  });
+});
