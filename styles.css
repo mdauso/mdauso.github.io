@@ -55,7 +55,7 @@ input, select {
   width: 100px;
 }
 
-/* Der Plot-Bereich soll sich auf die gesamte verfügbare Höhe erstrecken */
+
 /* 🔥 Sicherstellen, dass der Plot-Container das gesamte Fenster nutzt */
 #plotContainer {
   flex-grow: 1;
