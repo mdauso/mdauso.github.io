@@ -102,8 +102,8 @@ input, select {
 
 .custom-button {
   display: block;
-  width: 100%; /* Beide Buttons nutzen die gesamte Breite der Box */
-  max-width: 250px; /* Begrenzung, damit sie nicht zu breit werden */
+  width: 100%; /* Button passt sich der Box an */
+  max-width: 250px; /* Verhindert, dass der Button zu breit wird */
   padding: 12px;
   font-size: 16px;
   text-align: center;
@@ -114,6 +114,7 @@ input, select {
   cursor: pointer;
   transition: background 0.3s, transform 0.1s;
   margin: 0 auto; /* Zentriert den Button */
+  box-sizing: border-box; /* Stellt sicher, dass Padding die Breite nicht vergrößert */
 }
 
 .custom-button:hover {
@@ -123,6 +124,7 @@ input, select {
 .custom-button:active {
   transform: scale(0.98);
 }
+
 
 /* 🔥 Versteckt den Standard-File-Input */
 #csvFile {
