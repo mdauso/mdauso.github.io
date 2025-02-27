@@ -6,18 +6,22 @@ body {
   height: 100vh;
 }
 
+
 #header {
+  min-height: 60px; /* Mindestens 50px hoch */
+  padding: 10px 0; /* Vertikales Padding für Flexibilität */
   text-align: center;
-  padding: 20px 0;
   border-bottom: 1px solid #ccc;
   position: relative;
+
 }
+
 
 #logo {
   position: absolute;
-  top: 10px;
+  top: 15px;
   right: 20px;
-  height: 80px;
+  height: 70px;
 }
 
 #mainContent {
@@ -55,22 +59,20 @@ input, select {
   width: 100px;
 }
 
-
 /* 🔥 Sicherstellen, dass der Plot-Container das gesamte Fenster nutzt */
 #plotContainer {
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow: visible; /* 🔥 Verhindert das Abschneiden der Toolbar */
+}
+
+#plot {
+  width: 100%;
   height: 100%;
 }
 
-/* 🔥 Sicherstellen, dass das Diagramm wirklich den ganzen Platz nutzt */
-#plot {
-  width: 100vw;
-  height: 100vh;
-}
 
 /* 🔥 Einheitliche Tabellen-Styles für CSV-Vorschau & Debug-Ausgabe */
 .data-table {
@@ -125,10 +127,47 @@ input, select {
   transform: scale(0.98);
 }
 
-
 /* 🔥 Versteckt den Standard-File-Input */
 #csvFile {
   display: none; /* Macht das Datei-Upload-Feld unsichtbar */
+}
+
+/* 🔥 Fliegendes Debug-Fenster */
+#debugContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  height: 600px;
+  /*background: rgba(0, 0, 0, 0.8); /* Leicht transparent für besseren Kontrast */
+  color: white;
+  border-radius: 8px;
+  /*box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  /*padding: 10px;
+  overflow-y: auto;
+  cursor: move; /* Zeigt an, dass es verschiebbar ist */
+  z-index: 1000; /* Immer über anderen Elementen */
+}
+
+/* 🔥 Kopfzeile zum Ziehen */
+#debugHeader {
+  background: #007bff;
+  color: white;
+  padding: 5px;
+  cursor: grab;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 8px 8px 0 0;
+}
+
+/* 🔥 Debug-Inhalt */
+#debugOutput {
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 5px;
+color: black;
+
+  font-family: monospace;
 }
 
 
