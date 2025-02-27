@@ -162,3 +162,47 @@ document.getElementById('applyColorBtn').addEventListener('click', function() {
   console.log("🔥 Farbskala erfolgreich aktualisiert!");
 });
 
+// 🌍 Debug-Fenster beweglich machen
+dragElement(document.getElementById("debugContainer"));
+
+function dragElement(el) {
+  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  document.getElementById("debugHeader").onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
+    e.preventDefault();
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e.preventDefault();
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    el.style.top = (el.offsetTop - pos2) + "px";
+    el.style.left = (el.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+// 🔥 Debug-Daten in die Box schreiben
+function updateDebugOutput(message) {
+  let debugBox = document.getElementById('debugOutput');
+  debugBox.innerHTML += `<p>${message}</p>`;
+  debugBox.scrollTop = debugBox.scrollHeight; // Scrollt automatisch nach unten
+}
+
+// 🛠 Test: Debug-Daten einfügen
+setTimeout(() => {
+    updateDebugOutput("📂 warte auf Daten...");
+  }, 1000);
+
+
