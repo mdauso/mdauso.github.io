@@ -56,23 +56,21 @@ input, select {
 }
 
 /* Der Plot-Bereich soll sich auf die gesamte verfügbare Höhe erstrecken */
+/* 🔥 Sicherstellen, dass der Plot-Container das gesamte Fenster nutzt */
 #plotContainer {
-  flex-grow: 1 !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  overflow: hidden !important;
-  height: 100vh !important;
-  width: 100vw !important;
-  background: yellow; /* Testfarbe, um zu prüfen, ob es übernommen wird */
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: 100%;
 }
 
-/* Das Diagramm füllt den gesamten Plot-Container */
+/* 🔥 Sicherstellen, dass das Diagramm wirklich den ganzen Platz nutzt */
 #plot {
-  width: 100%;
-  height: 100vh; /* Diagramm nimmt die gesamte Fensterhöhe ein */
+  width: 100vw;
+  height: 100vh;
 }
-
 
 /* 🔥 Einheitliche Tabellen-Styles für CSV-Vorschau & Debug-Ausgabe */
 .data-table {
