@@ -57,13 +57,14 @@ input, select {
 
 /* Der Plot-Bereich soll sich auf die gesamte verfügbare Höhe erstrecken */
 #plotContainer {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0; /* Kein zusätzlicher Abstand */
-  overflow: hidden;
-  height: 100vh; /* Vollständige Höhe des Fensters */
+  flex-grow: 1 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  background: yellow; /* Testfarbe, um zu prüfen, ob es übernommen wird */
 }
 
 /* Das Diagramm füllt den gesamten Plot-Container */
