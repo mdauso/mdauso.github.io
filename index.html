@@ -2,215 +2,55 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>MD-Lambda-View 3D Surface (BIN-Einstellungen + Farbskala + Infofeld)</title>
-  <!-- Plotly-Bibliothek -->
+  <title>MD-Lambda-View 3D Surface</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-    /* HEADER */
-    #header {
-      position: relative;
-      text-align: center;
-      padding: 30px 0;
-      border-bottom: 1px solid #ccc;
-      flex-shrink: 0;
-    }
-    #logo {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      height: 80px;
-    }
-    h1 {
-      margin: 0;
-      padding: 0;
-    }
-    /* Hauptbereich: linkes Pane + Diagramm */
-    #mainContent {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      overflow: hidden;
-    }
-    #leftPane {
-      width: 300px;
-      min-width: 250px;
-      border-right: 1px solid #ccc;
-      padding: 10px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-    }
-    #fileInputContainer {
-      margin-bottom: 10px;
-    }
-    #error {
-      color: red;
-    }
-    #csvPreviewContainer {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: auto;
-      border: 1px solid #ddd;
-      padding: 5px;
-      margin-top: 10px;
-    }
-    table {
-      border-collapse: collapse;
-      table-layout: auto;
-      width: auto;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
-    #plotContainer {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-      box-sizing: border-box;
-    }
-    #plot {
-      width: 100%;
-      height: 100%;
-    }
-    /* Farbskala-Einstellungen */
-    #colorControls {
-      margin-top: 10px;
-      border: 1px solid #ddd;
-      padding: 10px;
-    }
-    #colorControls h3 {
-      margin-top: 0;
-    }
-    #colorControls label {
-      display: inline-block;
-      width: 80px;
-    }
-    #colorControls input[type='number'] {
-      width: 60px;
-    }
-    #colorControls select {
-      width: 100px;
-    }
-    #colorControls button {
-      margin-top: 10px;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-    /* BIN-Einstellungen */
-    #binControls {
-      margin-top: 10px;
-      border: 1px solid #ddd;
-      padding: 10px;
-    }
-    #binControls h3 {
-      margin-top: 0;
-    }
-    #binControls label {
-      display: inline-block;
-      width: 120px;
-    }
-    #binControls input[type='number'] {
-      width: 60px;
-    }
-    /* Infofeld am unteren Ende */
-    #infoField {
-      margin-top: 10px;
-      border: 1px solid #ddd;
-      padding: 10px;
-    }
-    #infoField h3 {
-      margin-top: 0;
-    }
-    #infoField textarea {
-      width: 100%;
-      resize: none;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
   <div id="header">
     <img id="logo" src="https://cafebrick.files.wordpress.com/2018/11/cropped-md.png" alt="Logo">
-
     <h1>MD-Lambda-View 3D Surface</h1>
   </div>
 
   <div id="mainContent">
     <div id="leftPane">
-      <!-- CSV-Upload -->
-      <div id="fileInputContainer">
-        <h3>CSV-Datei hochladen</h3>
-        <input type="file" id="csvFile" accept=".csv">
-        <p id="error"></p>
-      </div>
 
-      <!-- CSV-Vorschau -->
-      <div id="csvPreviewContainer">
-        <h3>CSV-Vorschau</h3>
-        <table id="csvPreviewTable"></table>
-      </div>
+<div class="controlBox">
+  <h3>CSV-Datei hochladen</h3>
+  <label for="csvFile" class="custom-button">📂 Datei auswählen</label>
+  <input type="file" id="csvFile" accept=".csv">
+  <p id="error" style="color: red;"></p>
+</div>
 
-      <!-- Farbskala-Einstellungen -->
-      <div id="colorControls">
-        <h3>Farbskala</h3>
-        <div>
-          <label for="cminInput">cmin:</label>
-          <input type="number" id="cminInput" step="0.01" value="0.65" />
-        </div>
-        <div>
-          <label for="cmaxInput">cmax:</label>
-          <input type="number" id="cmaxInput" step="0.01" value="1" />
-        </div>
-        <div>
-          <label for="scaleSelect">Skala:</label>
-          <select id="scaleSelect">
-            <option value="Viridis" selected>Viridis</option>
-            <option value="Cividis">Cividis</option>
-            <option value="Jet">Jet</option>
-            <option value="RdBu">RdBu</option>
-            <option value="Portland">Portland</option>
-            <option value="Picnic">Picnic</option>
-            <option value="Rainbow" selected>Rainbow</option>
-          </select>
-        </div>
-        <button id="applyColorBtn">Anwenden</button>
-      </div>
 
-      <!-- BIN-Einstellungen -->
-      <div id="binControls">
+      <div class="controlBox">
         <h3>BIN-Einstellungen</h3>
-        <div>
-          <label for="rpmStepInput">RPM Schrittweite:</label>
-          <input type="number" id="rpmStepInput" step="100" value="500" />
-        </div>
-        <div>
-          <label for="thrStepInput">Throttle Schrittweite:</label>
-          <input type="number" id="thrStepInput" step="1" value="5" />
-        </div>
+        <label>RPM Schrittweite: <input type="number" id="rpmStepInput" value="500"></label>
+        <label>Throttle Schrittweite: <input type="number" id="thrStepInput" value="5"></label>
       </div>
 
-      <!-- Infofeld -->
-      <div id="infoField">
-        <h3>Info</h3>
-	Copyright:<br>
-	www.MD-Lambda-View.com<br>       
-	info@md-lambda-view.com
-      </div>
+      <div class="controlBox">
+  <h3>Farbskala</h3>
+  <label>cmin: <input type="number" id="cminInput" step="0.01" value="0.65"></label>
+  <label>cmax: <input type="number" id="cmaxInput" step="0.01" value="1"></label>
+  <label>Skala:
+    <select id="scaleSelect">
+      <option value="Viridis">Viridis</option>
+      <option value="Cividis">Cividis</option>
+      <option value="Jet">Jet</option>
+      <option value="Rainbow" selected>Rainbow</option>
+      <option value="Plasma">Plasma</option>
+      <option value="Inferno">Inferno</option>
+    </select>
+  </label>
+  <button id="applyColorBtn" class="custom-button">🎨 Anwenden</button>
+</div>
+     <div id="debugContainer">
+  <h3>Debug-Ausgabe</h3>
+  <div id="debugOutput"></div>
+</div>
+
     </div>
 
     <div id="plotContainer">
@@ -218,227 +58,7 @@
     </div>
   </div>
 
-  <script>
-    let currentSurface = null;
+  <script src="script.js"></script>
 
-    document.getElementById('csvFile').addEventListener('change', function(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          // BOM entfernen & Windows-Zeilenenden normalisieren
-          let raw = e.target.result
-            .replace(/^\uFEFF/, '')
-            .replace(/\r\n/g, '\n');
-
-          // Zeilen aufsplitten
-          const lines = raw.split('\n').map(line => line.trim()).filter(line => line);
-          if (lines.length < 2) {
-            throw new Error('Die CSV-Datei ist leer oder hat nur eine Kopfzeile.');
-          }
-
-          // Kopfzeile parsen
-          let header = lines[0].split(';');
-          if (header.length < 5) {
-            throw new Error('Die Kopfzeile muss mind. 5 Spalten haben.');
-          }
-
-          // CSV-Vorschau-Tabelle
-          let table = document.getElementById('csvPreviewTable');
-          table.innerHTML = '';
-
-          let headerRow = table.insertRow();
-          header.forEach(text => {
-            let th = document.createElement('th');
-            th.textContent = text;
-            headerRow.appendChild(th);
-          });
-
-          // Arrays: Wir verwenden Spalte 1 (RPM), 2 (Throttle), 4 (Lambda)
-          let rpm = [];
-          let throttle = [];
-          let lambda = [];
-          let skippedLines = 0;
-
-          for (let i = 1; i < lines.length; i++) {
-            let row = table.insertRow();
-            let values = lines[i].split(';');
-
-            values.forEach(value => {
-              let cell = row.insertCell();
-              cell.textContent = value;
-            });
-
-            if (values.length < 5) {
-              console.warn(`Zeile ${i+1}: <5 Spalten => skip`);
-              skippedLines++;
-              continue;
-            }
-
-            let rpmVal = parseFloat(values[1].replace(',', '.'));
-            let throttleVal = parseFloat(values[2].replace(',', '.'));
-            let lambdaVal = parseFloat(values[4].replace(',', '.'));
-
-            if (isNaN(rpmVal) || isNaN(throttleVal) || isNaN(lambdaVal)) {
-              console.warn(`Zeile ${i+1}: Ungültige Zahl => skip`);
-              skippedLines++;
-              continue;
-            }
-
-            rpm.push(rpmVal);
-            throttle.push(throttleVal);
-            lambda.push(lambdaVal);
-          }
-          console.log('Skipped lines:', skippedLines);
-          if (rpm.length === 0) {
-            throw new Error('Keine gültigen Datenzeilen gefunden!');
-          }
-
-          // =================== 2D-BINNING ===================
-          let minRpm = Math.min(...rpm);
-          let maxRpm = Math.max(...rpm);
-          let minThr = Math.min(...throttle);
-          let maxThr = Math.max(...throttle);
-
-          console.log('minRpm=', minRpm, 'maxRpm=', maxRpm, 'minThr=', minThr, 'maxThr=', maxThr);
-          if (isNaN(minRpm) || isNaN(maxRpm) || isNaN(minThr) || isNaN(maxThr)) {
-            throw new Error('Ungültige Werte (NaN). Bitte CSV prüfen.');
-          }
-
-          // BIN-Schrittweiten aus Eingabefeldern
-          let rpmStep = parseFloat(document.getElementById('rpmStepInput').value) || 1000;
-          let thrStep = parseFloat(document.getElementById('thrStepInput').value) || 10;
-
-          let startRpm = Math.floor(minRpm / rpmStep) * rpmStep;
-          let endRpm = Math.ceil(maxRpm / rpmStep) * rpmStep;
-          let startThr = Math.floor(minThr / thrStep) * thrStep;
-          let endThr = Math.ceil(maxThr / thrStep) * thrStep;
-
-          if ((endRpm - startRpm) / rpmStep > 5000) {
-            throw new Error('Drehzahlbereich zu groß, Binning abgebrochen.');
-          }
-          if ((endThr - startThr) / thrStep > 500) {
-            throw new Error('Drosselklappenbereich zu groß, Binning abgebrochen.');
-          }
-
-          let rpmBins = [];
-          for (let r = startRpm; r <= endRpm; r += rpmStep) {
-            rpmBins.push(r);
-          }
-          let thrBins = [];
-          for (let t = startThr; t <= endThr; t += thrStep) {
-            thrBins.push(t);
-          }
-
-          // 2D-Bin-Daten: binData[rpmBin][thrBin] = { sumL, cnt }
-          let binData = {};
-          for (let rb of rpmBins) {
-            binData[rb] = {};
-            for (let tb of thrBins) {
-              binData[rb][tb] = { sumL: 0, cnt: 0 };
-            }
-          }
-
-          function getRpmBin(val) {
-            let key = Math.floor(val / rpmStep) * rpmStep;
-            if (key < startRpm) key = startRpm;
-            if (key > endRpm) key = endRpm;
-            return key;
-          }
-          function getThrBin(val) {
-            let key = Math.floor(val / thrStep) * thrStep;
-            if (key < startThr) key = startThr;
-            if (key > endThr) key = endThr;
-            return key;
-          }
-
-          for (let i = 0; i < rpm.length; i++) {
-            let rb = getRpmBin(rpm[i]);
-            let tb = getThrBin(throttle[i]);
-            binData[rb][tb].sumL += lambda[i];
-            binData[rb][tb].cnt++;
-          }
-
-          // Z-Matrix für Surface erstellen
-          let Nx = rpmBins.length;
-          let Ny = thrBins.length;
-          let zMatrix = new Array(Nx);
-          for (let i = 0; i < Nx; i++) {
-            zMatrix[i] = new Array(Ny).fill(NaN);
-          }
-          for (let i = 0; i < Nx; i++) {
-            let rKey = rpmBins[i];
-            for (let j = 0; j < Ny; j++) {
-              let tKey = thrBins[j];
-              let entry = binData[rKey][tKey];
-              if (entry.cnt === 0) continue;
-              zMatrix[i][j] = entry.sumL / entry.cnt;
-            }
-          }
-
-          let validFound = false;
-          outer: for (let i = 0; i < Nx; i++) {
-            for (let j = 0; j < Ny; j++) {
-              if (!isNaN(zMatrix[i][j])) {
-                validFound = true;
-                break outer;
-              }
-            }
-          }
-          if (!validFound) {
-            throw new Error('Keine gültigen Bins gefunden.');
-          }
-
-          // Surface-Trace
-          currentSurface = {
-            x: rpmBins,
-            y: thrBins,
-            z: zMatrix,
-            type: 'surface',
-            colorscale: 'Rainbow',
-            cmin: 0.65,
-            cmax: 1,
-            showscale: true
-          };
-
-          let layout = {
-            scene: {
-aspectmode: 'manual',
-    aspectratio: { x: 3, y: 2, z: 1 },  // X doppelt so lang
-
-              xaxis: { title: 'Drehzahl-Bin (U/min)' },
-              yaxis: { title: 'Drosselklappen-Bin (%)' },
-              zaxis: { title: 'Gemittelte Lambda' }
-            }
-          };
-
-          Plotly.newPlot('plot', [currentSurface], layout);
-          document.getElementById('error').textContent = '';
-        } catch (err) {
-          console.error(err);
-          document.getElementById('error').textContent = 'Fehler: ' + err.message;
-        }
-      };
-      reader.readAsText(file);
-    });
-
-    // Interaktive Farbskala
-    document.getElementById('applyColorBtn').addEventListener('click', function() {
-      if (!currentSurface) {
-        alert('Bitte zuerst eine CSV-Datei laden!');
-        return;
-      }
-      const cmin = parseFloat(document.getElementById('cminInput').value);
-      const cmax = parseFloat(document.getElementById('cmaxInput').value);
-      const newScale = document.getElementById('scaleSelect').value;
-      Plotly.update('plot', {
-        colorscale: [newScale],
-        cmin: [cmin],
-        cmax: [cmax]
-      }, {}, 0);
-    });
-  </script>
 </body>
 </html>
