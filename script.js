@@ -202,7 +202,11 @@ function updateDebugOutput(message) {
 
 // 🛠 Test: Debug-Daten einfügen
 setTimeout(() => {
-    updateDebugOutput("📂 warte auf Daten...");
+    updateDebugOutput("📂 waiting for data...");
   }, 1000);
 
 
+function resizeElement(e) {
+  debugContainer.style.width = Math.max(200, e.clientX - debugContainer.offsetLeft) + "px";
+  debugContainer.style.height = Math.max(300, e.clientY - debugContainer.offsetTop) + "px"; // 🔥 Mindesthöhe 300px
+}
