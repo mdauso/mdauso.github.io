@@ -1,64 +1,76 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MD-Lambda-View 3D Surface</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <div id="header">
+  <!-- Header mit Logo & Titel -->
+  <header id="header">
     <img id="logo" src="https://cafebrick.files.wordpress.com/2018/11/cropped-md.png" alt="Logo">
     <h1>MD-Lambda-View 3D Surface</h1>
-  </div>
+  </header>
 
-  <div id="mainContent">
-    <div id="leftPane">
-
-<div class="controlBox">
-  <h3>Upload CSV-File</h3>
-  <label for="csvFile" class="custom-button">📂 Select CSV-File</label>
-  <input type="file" id="csvFile" accept=".csv">
-  <p id="error" style="color: red;"></p>
-</div>
-
-
+  <main id="mainContent">
+    <aside id="leftPane">
+      
+      <!-- 🔄 CSV-Datei Upload -->
       <div class="controlBox">
-        <h3>BIN-Adjustment</h3>
-        <label>RPM Step: <input type="number" id="rpmStepInput" value="500"></label>
-        <label>Throttle Step: <input type="number" id="thrStepInput" value="5"></label>
+        <h3>📂 Load CSV-Data</h3>
+        <label for="csvFile" class="custom-button">Select CSV-File</label>
+        <input type="file" id="csvFile" accept=".csv" style="display: none;">
+        <p id="error" class="error-text"></p>
       </div>
 
+      <!-- 🔄 BIN-Settings -->
       <div class="controlBox">
-  <h3>Farbskala</h3>
-  <label>cmin: <input type="number" id="cminInput" step="0.01" value="0.65"></label>
-  <label>cmax: <input type="number" id="cmaxInput" step="0.01" value="1"></label>
-  <label>Scale:
-    <select id="scaleSelect">
-      <option value="Viridis">Viridis</option>
-      <option value="Cividis">Cividis</option>
-      <option value="Jet">Jet</option>
-      <option value="Rainbow" selected>Rainbow</option>
-      <option value="Plasma">Plasma</option>
-      <option value="Inferno">Inferno</option>
-    </select>
-  </label>
-  <button id="applyColorBtn" class="custom-button">🎨 Set</button>
-</div>
+        <h3>⚙️ BIN-Settings</h3>
+        <label for="rpmStepInput">RPM Step:</label>
+        <input type="number" id="rpmStepInput" value="500" min="100" step="100">
+        
+        <label for="thrStepInput">Throttle Step:</label>
+        <input type="number" id="thrStepInput" value="5" min="1" step="1">
+      </div>
 
-<div id="debugContainer">
-  <div id="debugHeader">🔍 Averaged Data</div>
-  <div id="debugOutput"></div>
-</div>
+      <!-- 🔄 Farbskala Settings -->
+      <div class="controlBox">
+        <h3>🎨 Color Scale</h3>
+        <label for="cminInput">Min-Value:</label>
+        <input type="number" id="cminInput" step="0.01" value="0.65">
 
+        <label for="cmaxInput">Max-Value:</label>
+        <input type="number" id="cmaxInput" step="0.01" value="1">
 
-    </div>
+        <label for="scaleSelect">Color Schema:</label>
+        <select id="scaleSelect">
+          <option value="Viridis">Viridis</option>
+          <option value="Cividis">Cividis</option>
+          <option value="Jet">Jet</option>
+          <option value="Rainbow" selected>Rainbow</option>
+          <option value="Plasma">Plasma</option>
+          <option value="Inferno">Inferno</option>
+        </select>
 
-    <div id="plotContainer">
+        <button id="applyColorBtn" class="custom-button">🎨 Set</button>
+      </div>
+
+      <!-- 🔄 Debugging-Box -->
+      <section id="debugContainer">
+        <div id="debugHeader">🔍 Averaged Data</div>
+        <div id="debugOutput"> 📂 Waiting for Data...</div>
+      </section>
+
+    </aside>
+
+    <!-- 🔄 Plot-Container -->
+    <section id="plotContainer">
       <div id="plot"></div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script src="script.js"></script>
 
