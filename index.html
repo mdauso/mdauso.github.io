@@ -17,7 +17,7 @@
     <div id="leftPane">
 
 <div class="controlBox">
-  <h3>CSV-Datei hochladen</h3>
+  <h3>Upload CSV-File</h3>
   <label for="csvFile" class="custom-button">📂 Datei auswählen</label>
   <input type="file" id="csvFile" accept=".csv">
   <p id="error" style="color: red;"></p>
@@ -25,16 +25,16 @@
 
 
       <div class="controlBox">
-        <h3>BIN-Einstellungen</h3>
-        <label>RPM Schrittweite: <input type="number" id="rpmStepInput" value="500"></label>
-        <label>Throttle Schrittweite: <input type="number" id="thrStepInput" value="5"></label>
+        <h3>BIN-Adjustment</h3>
+        <label>RPM Step: <input type="number" id="rpmStepInput" value="500"></label>
+        <label>Throttle Step: <input type="number" id="thrStepInput" value="5"></label>
       </div>
 
       <div class="controlBox">
   <h3>Farbskala</h3>
   <label>cmin: <input type="number" id="cminInput" step="0.01" value="0.65"></label>
   <label>cmax: <input type="number" id="cmaxInput" step="0.01" value="1"></label>
-  <label>Skala:
+  <label>Scale:
     <select id="scaleSelect">
       <option value="Viridis">Viridis</option>
       <option value="Cividis">Cividis</option>
@@ -44,11 +44,11 @@
       <option value="Inferno">Inferno</option>
     </select>
   </label>
-  <button id="applyColorBtn" class="custom-button">🎨 Anwenden</button>
+  <button id="applyColorBtn" class="custom-button">🎨 Set</button>
 </div>
 
 <div id="debugContainer">
-  <div id="debugHeader">🔍 Daten</div>
+  <div id="debugHeader">🔍 Averaged Data</div>
   <div id="debugOutput"></div>
 </div>
 
