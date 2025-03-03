@@ -1,14 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
   let debugBox = document.getElementById("debugContainer");
-  debugBox.style.bottom = "100px"; // 🔥 Weiter unten setzen (je nach Bedarf erhöhen)
+  debugBox.style.bottom = "100px"; // Debug-Fenster weiter unten setzen
 });
-
-
-
-
 
 let currentSurface = null;
 
+// 🔄 CSV-Datei einlesen & verarbeiten
 document.getElementById('csvFile').addEventListener('change', function(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -16,208 +13,170 @@ document.getElementById('csvFile').addEventListener('change', function(event) {
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
-      let raw = e.target.result.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n');
-      const lines = raw.split('\n').map(line => line.trim()).filter(line => line);
-      if (lines.length < 2) throw new Error('CSV enthält keine Datenzeilen.');
+      let raw = e.target.result.trim();
+      const lines = raw.split('\n').filter(line => line);
+      if (lines.length < 2) return updateError('CSV enthält keine Datenzeilen.');
 
-      let rpm = [], throttle = [], lambda = [];
-
-      
-
-      // **Daten für Binning vorbereiten**
-      for (let i = 1; i < lines.length; i++) {
-        let values = lines[i].split(';');
-        if (values.length < 5) continue;
-
-        let rpmVal = parseFloat(values[1].replace(',', '.'));
-        let thrVal = parseFloat(values[2].replace(',', '.'));
-        let lambdaVal = parseFloat(values[4].replace(',', '.'));
-
-        if (!isNaN(rpmVal) && !isNaN(thrVal) && !isNaN(lambdaVal)) {
-          rpm.push(rpmVal);
-          throttle.push(thrVal);
-          lambda.push(lambdaVal);
+      // **CSV-Daten in Arrays umwandeln**
+      const [rpm, throttle, lambda] = lines.slice(1).reduce((acc, line) => {
+        let values = line.split(';').map(v => parseFloat(v.replace(',', '.')));
+        if (values.length >= 5 && values.every(n => !isNaN(n))) {
+          acc[0].push(values[1]); // RPM
+          acc[1].push(values[2]); // Throttle
+          acc[2].push(values[4]); // Lambda
         }
-      }
+        return acc;
+      }, [[], [], []]);
 
-      if (rpm.length === 0) throw new Error("Keine gültigen Daten in der CSV gefunden!");
+      if (rpm.length === 0) return updateError("Keine gültigen Daten in der CSV gefunden!");
 
-      let rpmStep = parseFloat(document.getElementById('rpmStepInput').value) || 500;
-      let thrStep = parseFloat(document.getElementById('thrStepInput').value) || 5;
+      // **BIN-Werte berechnen**
+      const rpmStep = parseFloat(document.getElementById('rpmStepInput').value) || 500;
+      const thrStep = parseFloat(document.getElementById('thrStepInput').value) || 5;
 
-      let rpmBins = [...new Set(rpm.map(v => Math.round(v / rpmStep) * rpmStep))].sort((a, b) => a - b);
-      let thrBins = [...new Set(throttle.map(v => Math.round(v / thrStep) * thrStep))].sort((a, b) => a - b);
+      const createBins = (data, step) => [...new Set(data.map(v => Math.round(v / step) * step))].sort((a, b) => a - b);
+      const rpmBins = createBins(rpm, rpmStep);
+      const thrBins = createBins(throttle, thrStep);
 
-      let sumMatrix = Array.from({ length: thrBins.length }, () => Array(rpmBins.length).fill(0));
-      let countMatrix = Array.from({ length: thrBins.length }, () => Array(rpmBins.length).fill(0));
-      let zMatrix = Array.from({ length: thrBins.length }, () => Array(rpmBins.length).fill(null)); // `null` für Plotly
+      // **Matrix für Binning vorbereiten**
+      const sumMatrix = Array.from({ length: thrBins.length }, () => Array(rpmBins.length).fill(0));
+      const countMatrix = Array.from({ length: thrBins.length }, () => Array(rpmBins.length).fill(0));
+      const zMatrix = Array.from({ length: thrBins.length }, () => Array(rpmBins.length).fill(null));
 
       let validData = false;
-      for (let i = 0; i < rpm.length; i++) {
-        let rIdx = rpmBins.indexOf(Math.round(rpm[i] / rpmStep) * rpmStep);
+      rpm.forEach((rVal, i) => {
+        let rIdx = rpmBins.indexOf(Math.round(rVal / rpmStep) * rpmStep);
         let tIdx = thrBins.indexOf(Math.round(throttle[i] / thrStep) * thrStep);
         if (rIdx >= 0 && tIdx >= 0) {
           sumMatrix[tIdx][rIdx] += lambda[i];
           countMatrix[tIdx][rIdx] += 1;
           validData = true;
         }
-      }
+      });
 
-      // **🔍 Fix für ungleichmäßige Arrays**
-      for (let t = 0; t < thrBins.length; t++) {
-        for (let r = 0; r < rpmBins.length; r++) {
-          if (countMatrix[t][r] > 0) {
-            zMatrix[t][r] = sumMatrix[t][r] / countMatrix[t][r];
+      // **Durchschnittswerte für Binning berechnen**
+      thrBins.forEach((_, tIdx) => {
+        rpmBins.forEach((_, rIdx) => {
+          if (countMatrix[tIdx][rIdx] > 0) {
+            zMatrix[tIdx][rIdx] = sumMatrix[tIdx][rIdx] / countMatrix[tIdx][rIdx];
           }
-        }
-      }
+        });
+      });
 
-      if (!validData) throw new Error("Alle Bins enthalten nur Null-Werte!");
+      if (!validData) return updateError("Alle Bins enthalten nur Null-Werte!");
 
-      // **🔥 Debugging: Werte in Konsole anzeigen**
       console.log("🔥 RPM-Bins:", rpmBins);
-      console.log("🔥 Drosselklappen-Bins:", thrBins);
+      console.log("🔥 Throttle-Bins:", thrBins);
       console.log("🔥 Z-Werte (Lambda):", zMatrix);
 
-      // **🔥 Debug-Tabelle erstellen**
-      let debugTable = `<table class="data-table"><thead><tr>
-                         <th>BIN-Drehzahl</th>
-                         <th>BIN-Drosselklappe</th>
-                         <th>BIN-Lambda</th></tr></thead><tbody>`;
-
-      for (let t = 0; t < thrBins.length; t++) {
-        for (let r = 0; r < rpmBins.length; r++) {
-          let lambdaValue = zMatrix[t][r] !== null ? zMatrix[t][r].toFixed(2) : "N/A";
-          debugTable += `<tr>
-            <td>${rpmBins[r]}</td>
-            <td>${thrBins[t]}</td>
-            <td>${lambdaValue}</td>
-          </tr>`;
-        }
-      }
-
-      debugTable += `</tbody></table>`;
-      document.getElementById('debugOutput').innerHTML = debugTable;
-
-      console.log("🔥 Debug Tabelle HTML:");
-      console.log(document.getElementById('debugOutput').outerHTML);
-
-      // **Graph erstellen**
-      currentSurface = {
-        x: rpmBins,
-        y: thrBins,
-        z: zMatrix,
-        type: 'surface',
-        colorscale: 'Rainbow',
-        cmin: 0.65,
-        cmax: 1,
-        showscale: true
-      };
-
-      let layout = {
-        scene: {
-          aspectmode: 'manual',
-          aspectratio: { x: 3, y: 2, z: 1 },
-          xaxis: { title: 'Drehzahl (U/min)' },
-          yaxis: { title: 'Drosselklappenstellung (%)' },
-          zaxis: { title: 'Lambda' }
-        }
-      };
-
-      Plotly.newPlot('plot', [currentSurface], layout);
+      updateDebugTable(rpmBins, thrBins, zMatrix);
+      plotGraph(rpmBins, thrBins, zMatrix);
 
     } catch (err) {
-      console.error("🔥 Fehler im Debug- oder Graphenbereich:", err.message);
-      document.getElementById('error').textContent = 'Fehler: ' + err.message;
+      console.error("🔥 Fehler:", err.message);
+      updateError('Fehler: ' + err.message);
     }
   };
   reader.readAsText(file);
 });
 
-// 🔥 Event-Listener für Farbskala-Einstellungen
+// 🔍 Debug-Tabelle aktualisieren
+function updateDebugTable(rpmBins, thrBins, zMatrix) {
+  const debugTable = [
+    `<table class="data-table"><thead><tr>
+      <th>RPM</th><th>Throttle</th><th>Lambda</th></tr></thead><tbody>`,
+    ...thrBins.flatMap((t, tIdx) => 
+      rpmBins.map((r, rIdx) => 
+        `<tr><td>${r}</td><td>${t}</td><td>${zMatrix[tIdx][rIdx] !== null ? zMatrix[tIdx][rIdx].toFixed(2) : "N/A"}</td></tr>`
+      )
+    ),
+    `</tbody></table>`
+  ].join('');
+  
+  document.getElementById('debugOutput').innerHTML = debugTable;
+}
+
+// 📊 Plotly-Graph aktualisieren
+function plotGraph(rpmBins, thrBins, zMatrix) {
+  currentSurface = {
+    x: rpmBins,
+    y: thrBins,
+    z: zMatrix,
+    type: 'surface',
+    colorscale: 'Rainbow',
+    cmin: 0.65,
+    cmax: 1,
+    showscale: true
+  };
+
+  const layout = {
+    scene: {
+      aspectmode: 'manual',
+      aspectratio: { x: 3, y: 2, z: 1 },
+      xaxis: { title: 'RPM (U/min)' },
+      yaxis: { title: 'Throttle Position (%)' },
+      zaxis: { title: 'Lambda' }
+    }
+  };
+
+  Plotly.newPlot('plot', [currentSurface], layout);
+}
+
+// 🎨 Farbskala anpassen
 document.getElementById('applyColorBtn').addEventListener('click', function() {
-  if (!currentSurface) {
-    alert('Bitte zuerst eine CSV-Datei laden!');
-    return;
-  }
+  if (!currentSurface) return alert('Bitte zuerst eine CSV-Datei laden!');
 
   let newScale = document.getElementById('scaleSelect').value;
   let cmin = parseFloat(document.getElementById('cminInput').value);
   let cmax = parseFloat(document.getElementById('cmaxInput').value);
-
-  if (isNaN(cmin) || isNaN(cmax)) {
-    alert("Bitte gültige Werte für die Farbskala eingeben!");
-    return;
-  }
+  
+  if (isNaN(cmin) || isNaN(cmax)) return alert("Bitte gültige Werte für die Farbskala eingeben!");
 
   console.log(`🔥 Neue Farbskala: ${newScale}, cmin: ${cmin}, cmax: ${cmax}`);
 
-  // 🔥 `currentSurface` aktualisieren, damit sich die Farbskala mehrfach ändern lässt
   currentSurface.colorscale = newScale;
   currentSurface.cmin = cmin;
   currentSurface.cmax = cmax;
 
-  // 🔥 Graph mit `Plotly.react()` neu rendern, damit Änderungen dauerhaft übernommen werden
   Plotly.react('plot', [currentSurface], {
     scene: {
       aspectmode: 'manual',
       aspectratio: { x: 3, y: 2, z: 1 },
-      xaxis: { title: 'Drehzahl (U/min)' },
-      yaxis: { title: 'Drosselklappenstellung (%)' },
+      xaxis: { title: 'RPM (U/min)' },
+      yaxis: { title: 'Throttle Position (%)' },
       zaxis: { title: 'Lambda' }
     }
   });
-
-  console.log("🔥 Farbskala erfolgreich aktualisiert!");
 });
+
+// 🔥 Fehler ausgeben
+function updateError(message) {
+  document.getElementById('error').textContent = message;
+}
 
 // 🌍 Debug-Fenster beweglich machen
 dragElement(document.getElementById("debugContainer"));
 
 function dragElement(el) {
   let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  document.getElementById("debugHeader").onmousedown = dragMouseDown;
-
-  function dragMouseDown(e) {
+  document.getElementById("debugHeader").onmousedown = function(e) {
     e.preventDefault();
     pos3 = e.clientX;
     pos4 = e.clientY;
     document.onmouseup = closeDragElement;
-    document.onmousemove = elementDrag;
-  }
-
-  function elementDrag(e) {
-    e.preventDefault();
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    el.style.top = (el.offsetTop - pos2) + "px";
-    el.style.left = (el.offsetLeft - pos1) + "px";
-  }
+    document.onmousemove = function(e) {
+      e.preventDefault();
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      el.style.top = (el.offsetTop - pos2) + "px";
+      el.style.left = (el.offsetLeft - pos1) + "px";
+    };
+  };
 
   function closeDragElement() {
     document.onmouseup = null;
     document.onmousemove = null;
   }
 }
-
-function resizeElement(e) {
-  debugContainer.style.width = Math.max(200, e.clientX - debugContainer.offsetLeft) + "px";
-  debugContainer.style.height = Math.max(300, e.clientY - debugContainer.offsetTop) + "px"; // 🔥 Mindesthöhe 300px
-}
-
-// 🔥 Debug-Daten in die Box schreiben
-function updateDebugOutput(message) {
-  let debugBox = document.getElementById('debugOutput');
-  debugBox.innerHTML += `<p>${message}</p>`;
-  debugBox.scrollTop = debugBox.scrollHeight; // Scrollt automatisch nach unten
-}
-
-// 🛠 Test: Debug-Daten einfügen
-setTimeout(() => {
-    updateDebugOutput("📂 waiting for data...");
-  }, 1000);
-
-
-
