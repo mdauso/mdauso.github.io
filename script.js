@@ -1,3 +1,12 @@
+document.addEventListener("DOMContentLoaded", function () {
+  let debugBox = document.getElementById("debugContainer");
+  debugBox.style.bottom = "100px"; // 🔥 Weiter unten setzen (je nach Bedarf erhöhen)
+});
+
+
+
+
+
 let currentSurface = null;
 
 document.getElementById('csvFile').addEventListener('change', function(event) {
