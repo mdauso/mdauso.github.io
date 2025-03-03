@@ -135,7 +135,7 @@ input, select {
 /* 🔥 Fliegendes Debug-Fenster */
 #debugContainer {
   position: fixed;
-  bottom: 50px;
+  bottom: 800px;
   right: 20px;
   width: 350px;
   height: 1000px;
