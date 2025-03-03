@@ -135,10 +135,10 @@ input, select {
 /* 🔥 Fliegendes Debug-Fenster */
 #debugContainer {
   position: fixed;
-  bottom: 800px;
+  bottom: 50px;
   right: 20px;
-  width: 350px;
-  height: 1000px;
+  width: 300px;
+  height: 400px;
   /*background: rgba(0, 0, 0, 0.8); /* Leicht transparent für besseren Kontrast */
   color: white;
   border-radius: 8px;
