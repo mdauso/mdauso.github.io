@@ -1,78 +1,233 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MD-Lambda-View 3D Surface</title>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+/* 🔥 Basis-Reset für saubere Darstellung */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  <!-- Header mit Logo & Titel -->
-  <header id="header">
-    <img id="logo" src="https://cafebrick.files.wordpress.com/2018/11/cropped-md.png" alt="Logo">
-    <h1>MD-Lambda-View 3D Surface</h1>
-  </header>
+/* 🔵 Body – Gesamte Seite */
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
 
-  <main id="mainContent">
-    <aside id="leftPane">
-      
-      <!-- 🔄 CSV-Datei Upload -->
-      <div class="controlBox">
-        <h3>📂 Load CSV-Data</h3>
-        <label for="csvFile" class="custom-button">Select CSV-File</label>
-        <input type="file" id="csvFile" accept=".csv" style="display: none;">
-        <p id="error" class="error-text"></p>
-      </div>
+/* 🏆 Header */
+#header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 15px;
+  background: #f8f9fa;
+  color: black;
+  border-bottom: 3px solid #f1f1f1;
+}
 
-      <!-- 🔄 BIN-Settings -->
-      <div class="controlBox">
-        <h3>⚙️ BIN-Settings</h3>
-        <label for="rpmStepInput">RPM Step:</label>
-        <input type="number" id="rpmStepInput" value="500" min="100" step="100">
-        
-        <label for="thrStepInput">Throttle Step:</label>
-        <input type="number" id="thrStepInput" value="5" min="1" step="1">
-      </div>
+#logo {
+  position: absolute;
+  right: 20px;
+  height: 50px;
+}
 
-      <!-- 🔄 Farbskala Settings -->
-      <div class="controlBox">
-        <h3>🎨 Color Scale</h3>
-        <label for="cminInput">Min-Value:</label>
-        <input type="number" id="cminInput" step="0.01" value="0.65">
+h1 {
+  font-size: 20px;
+  text-align: center;
+}
 
-        <label for="cmaxInput">Max-Value:</label>
-        <input type="number" id="cmaxInput" step="0.01" value="1">
+/* 📌 Layout – Hauptcontainer */
+#mainContent {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
 
-        <label for="scaleSelect">Color Schema:</label>
-        <select id="scaleSelect">
-          <option value="Viridis">Viridis</option>
-          <option value="Cividis">Cividis</option>
-          <option value="Jet">Jet</option>
-          <option value="Rainbow" selected>Rainbow</option>
-          <option value="Plasma">Plasma</option>
-          <option value="Inferno">Inferno</option>
-        </select>
+/* 📌 Seitenleiste */
+#leftPane {
+  width: 280px;
+  min-width: 250px;
+  background: #fff;
+  padding: 15px;
+  border-right: 2px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
-        <button id="applyColorBtn" class="custom-button">🎨 Set</button>
-      </div>
+/* 🛠️ Steuerboxen */
+.controlBox {
+  background: #f1f1f1;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-      <!-- 🔄 Debugging-Box -->
-      <section id="debugContainer">
-        <div id="debugHeader">🔍 Averaged Data</div>
-        <div id="debugOutput"> 📂 Waiting for Data...</div>
-      </section>
+.controlBox h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
 
-    </aside>
+/* 🎨 Farbskala & Bin-Einstellungen */
+.controlBox label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 0;
+  font-size: 14px;
+}
 
-    <!-- 🔄 Plot-Container -->
-    <section id="plotContainer">
-      <div id="plot"></div>
-    </section>
-  </main>
+.controlBox input,
+.controlBox select {
+  width: 100px;
+  padding: 4px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
 
-  <script src="script.js"></script>
+/* 📂 Datei-Upload */
+input[type="file"] {
+  display: none;
+}
 
-</body>
-</html>
+/* 🎨 Buttons */
+.custom-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+  margin-top: 10px;
+}
+
+.custom-button:hover {
+  background: #0056b3;
+}
+
+.custom-button:active {
+  transform: scale(0.98);
+}
+
+/* 📊 Plot-Container */
+#plotContainer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+#plot {
+  width: 100%;
+  height: 100%;
+}
+
+/* 🔍 Debug-Fenster */
+#debugContainer {
+  position: fixed;
+  bottom: 50px;
+  right: 20px;
+  width: 350px;
+  height: 400px;
+  min-height: 300px;
+  background: rgba(50, 50, 50, 0.95);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  cursor: move;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 🔍 Debug-Header */
+#debugHeader {
+  background: #007bff;
+  color: white;
+  padding: 8px;
+  font-weight: bold;
+  text-align: center;
+  cursor: grab;
+  border-radius: 8px 8px 0 0;
+}
+
+/* 🔍 Debug-Inhalt */
+#debugOutput {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  font-family: monospace;
+  border-radius: 0 0 8px 8px;
+}
+
+/* 🖱️ Resize-Handle für Debug-Fenster */
+#resizeHandle {
+  width: 15px;
+  height: 15px;
+  background: #007bff;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  cursor: nwse-resize;
+  border-radius: 0 0 8px 0;
+}
+
+
+/* 🔍 Debug-Tabelle */
+#debugOutput table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+/* 🔍 Debug-Tabelle Spaltenüberschriften */
+#debugOutput th {
+  background: #007bff;
+  color: white;
+  padding: 8px 15px; /* 🔥 Mehr Platz */
+  text-align: center;
+  font-weight: bold;
+  white-space: nowrap; /* Verhindert Zeilenumbrüche */
+}
+
+/* 🔍 Debug-Tabelle Spalteninhalte */
+#debugOutput td {
+  padding: 6px 15px; /* 🔥 Mehr Abstand für bessere Lesbarkeit */
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+}
+
+
+
+/* 🚀 Responsives Design */
+@media (max-width: 800px) {
+  #mainContent {
+    flex-direction: column;
+  }
+
+  #leftPane {
+    width: 100%;
+    border-right: none;
+  }
+
+  #plotContainer {
+    height: 400px;
+  }
+
+  #debugContainer {
+    width: 90%;
+    height: 300px;
+    bottom: 10px;
+    right: 5%;
+  }
+}
