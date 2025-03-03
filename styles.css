@@ -95,7 +95,7 @@ input, select {
 
 /* 🔥 Feste Höhe für Debug- und CSV-Vorschau + Scrollbar */
 #debugOutput, #csvPreviewContainer {
-  height: 500px; /* Feste Höhe */
+  height: 800px; /* Feste Höhe */
   overflow-y: auto; /* Scrollbar bei Bedarf */
   border: 1px solid #ccc;
   padding: 5px;
