@@ -5,6 +5,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 let currentSurface = null;
 
+// 🎯 Standardkamera (Default-Ansicht)
+const DEFAULT_CAMERA = {
+  eye:    { x: 1.5, y: 1.5, z: 1.2 },
+  center: { x: 0,   y: 0,   z: 0   },
+  up:     { x: 0,   y: 0,   z: 1   }
+};
+
 // 🔄 CSV-Datei einlesen & verarbeiten
 document.getElementById('csvFile').addEventListener('change', function(event) {
   const file = event.target.files[0];
@@ -110,14 +117,16 @@ function plotGraph(rpmBins, thrBins, zMatrix) {
   };
 
   const layout = {
-    scene: {
-      aspectmode: 'manual',
-      aspectratio: { x: 3, y: 2, z: 1 },
-      xaxis: { title: 'RPM (U/min)' },
-      yaxis: { title: 'Throttle Position (%)' },
-      zaxis: { title: 'Lambda' }
-    }
-  };
+  scene: {
+    aspectmode: 'manual',
+    aspectratio: { x: 3, y: 2, z: 1 },
+    xaxis: { title: 'RPM (U/min)' },
+    yaxis: { title: 'Throttle Position (%)' },
+    zaxis: { title: 'Lambda' },
+    camera: DEFAULT_CAMERA // 🔒 Default-Ansicht beim ersten Render
+  },
+  uirevision: 'keep' // 🧷 verhindert Kamera-Reset bei Updates
+};
 
   Plotly.newPlot('plot', [currentSurface], layout);
 }
@@ -139,14 +148,16 @@ document.getElementById('applyColorBtn').addEventListener('click', function() {
   currentSurface.cmax = cmax;
 
   Plotly.react('plot', [currentSurface], {
-    scene: {
-      aspectmode: 'manual',
-      aspectratio: { x: 3, y: 2, z: 1 },
-      xaxis: { title: 'RPM (U/min)' },
-      yaxis: { title: 'Throttle Position (%)' },
-      zaxis: { title: 'Lambda' }
-    }
-  });
+  scene: {
+    aspectmode: 'manual',
+    aspectratio: { x: 3, y: 2, z: 1 },
+    xaxis: { title: 'RPM (U/min)' },
+    yaxis: { title: 'Throttle Position (%)' },
+    zaxis: { title: 'Lambda' }
+    // ❗ KEIN camera hier – sonst überschreibst du die Nutzeransicht
+  },
+  uirevision: 'keep'
+});
 });
 
 // 🔥 Fehler ausgeben
