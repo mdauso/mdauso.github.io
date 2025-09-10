@@ -7,7 +7,7 @@ let currentSurface = null;
 
 // 🎯 Standardkamera (Default-Ansicht)
 const DEFAULT_CAMERA = {
-  eye:    { x: -1.3, y: -1.3, z: -1.8 },
+  eye:    { x: -1.3, y: -1.3, z: 1.8 },
   center: { x: 0,   y: 0,   z: 0   },
   up:     { x: 0,   y: 0,   z: 1   }
 };
